@@ -1,12 +1,13 @@
-from gsuid_core.sv import SV
 from gsuid_core.bot import Bot
 from gsuid_core.models import Event
-from ..utils.database.models import WzryBind
+from gsuid_core.sv import SV
 from gsuid_core.utils.message import send_diff_msg
+
+from ..utils.database.models import WzryBind
 from .deal_ck import deal_wz_ck
 
 wzry_user_info = SV('王者用户绑定')
-wzry_cookie_add = SV('王者CK添加')
+wzry_cookie_add = SV('王者CK添加', area='DIRECT')
 
 
 @wzry_user_info.on_command(
