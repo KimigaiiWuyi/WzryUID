@@ -20,7 +20,8 @@ wzry_cookie_add = SV('王者CK添加', area='DIRECT')
         '王者切换UID',
         '王者删除uid',
         '王者删除UID',
-    )
+    ),
+    block=True,
 )
 async def send_wz_link_uid_msg(bot: Bot, ev: Event):
     await bot.logger.info('开始执行[绑定/解绑用户信息]')
