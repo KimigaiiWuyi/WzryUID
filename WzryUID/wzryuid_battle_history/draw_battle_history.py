@@ -1,18 +1,20 @@
-from ..utils.wzry_api import wzry_api
-from typing import Union, Tuple
+import time
+from pathlib import Path
+from typing import Tuple, Union
+
 from PIL import Image, ImageDraw
-from ..utils.error_reply import get_error
+from gsuid_core.utils.fonts.fonts import core_font
+from gsuid_core.utils.image.convert import convert_img
 from gsuid_core.utils.image.image_tools import (
     get_color_bg,
     get_qq_avatar,
     draw_pic_with_ring,
 )
-from gsuid_core.utils.image.convert import convert_img
-from ..utils.resource_path import BG_PATH, AVATAR_PATH, ICON_PATH
-from pathlib import Path
+
+from ..utils.wzry_api import wzry_api
+from ..utils.error_reply import get_error
 from ..utils.download import download_file
-from gsuid_core.utils.fonts.fonts import core_font
-import time
+from ..utils.resource_path import BG_PATH, ICON_PATH, AVATAR_PATH
 
 TEXT_PATH = Path(__file__).parent / 'texture2d'
 

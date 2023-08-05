@@ -2,10 +2,11 @@ from gsuid_core.sv import SV
 from gsuid_core.bot import Bot
 from gsuid_core.models import Event
 from gsuid_core.logger import logger
-from .draw_battle_history import draw_history_img
 from gsuid_core.utils.database.api import get_uid
-from ..utils.database.models import WzryBind
+
 from ..utils.error_reply import get_error
+from ..utils.database.models import WzryBind
+from .draw_battle_history import draw_history_img
 
 sv_wzry_history = SV('查询王者荣耀战绩')
 

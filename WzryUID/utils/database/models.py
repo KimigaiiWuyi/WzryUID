@@ -1,6 +1,7 @@
-from gsuid_core.utils.database.base_models import Bind, User
 from typing import Optional
+
 from sqlmodel import Field
+from gsuid_core.utils.database.base_models import Bind, User
 
 
 class WzryBind(Bind, table=True):

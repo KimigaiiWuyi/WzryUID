@@ -1,4 +1,4 @@
-# StarRailUID
+# WzryUID
 
 <p align="center">
   <a href="https://github.com/KimigaiiWuyi/WzryUID"><img src="https://s2.loli.net/2023/08/05/ID3Wxq6tSGbo7OM.png" width="256" height="256" alt="StarRailUID"></a>
