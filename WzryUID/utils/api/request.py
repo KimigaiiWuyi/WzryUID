@@ -139,5 +139,11 @@ class BaseWzryApi:
                 except ContentTypeError:
                     _raw_data = await resp.text()
                     raw_data = {"retcode": -999, "data": _raw_data}
+                if (
+                    raw_data
+                    and 'returnCode' in raw_data
+                    and raw_data['returnCode'] != 0
+                ):
+                    return raw_data['returnCode']
                 logger.debug(raw_data)
                 return raw_data
