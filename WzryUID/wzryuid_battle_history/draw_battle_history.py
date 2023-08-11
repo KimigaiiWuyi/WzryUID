@@ -1,4 +1,3 @@
-import time
 from pathlib import Path
 from typing import Tuple, Union
 
@@ -47,9 +46,7 @@ async def draw_history_img(user_id: str, yd_user_id: str) -> Union[str, bytes]:
     text_color = (48, 48, 48)
     for index, battle in enumerate(battle_data):
         is_win = True if battle['gameresult'] == 1 else False
-        date = time.strftime(
-            '%Y-%m-%d %H:%M:%S', time.localtime(int(battle['dtEventTime']))
-        )
+        date = battle["gametime"]
         if is_win:
             bar_text = '胜利'
             babg = Image.open(TEXT_PATH / 'win_bg.png')
@@ -79,6 +76,18 @@ async def draw_history_img(user_id: str, yd_user_id: str) -> Union[str, bytes]:
         babg_draw.text(
             (281, 52), battle['mapName'], text_color, core_font(18), 'lm'
         )
+
+        if battle["desc"] != "":
+            babg_draw.rectangle(
+                (395, 45, 495, 85),
+                fill=(255, 247, 247, 33),
+                outline=(0, 0, 0, 33),
+                width=2,
+            )
+            babg_draw.text(
+                (405, 65), battle['desc'], bar_color, core_font(26), 'lm'
+            )
+
         babg_draw.text(
             (210, 83),
             f"{kill} / {dead} / {assist}",
