@@ -119,7 +119,7 @@ class BaseWzryApi:
 
     async def get_user_role(self, yd_user_id: str):
         header = deepcopy(self._HEADER)
-        header["Content-Type"] = "application/x-www-form-urlencoded",
+        header["Content-Type"] = "application/x-www-form-urlencoded"
         header["Host"] = "ssl.kohsocialapp.qq.com:10001"
         ck = await WzryUser.get_random_cookie(yd_user_id)
         if ck is None:
