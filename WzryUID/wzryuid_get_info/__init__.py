@@ -1,11 +1,12 @@
-from gsuid_core.bot import Bot
-from gsuid_core.logger import logger
-from gsuid_core.models import Event
 from gsuid_core.sv import SV
+from gsuid_core.bot import Bot
+from gsuid_core.models import Event
+from gsuid_core.logger import logger
 from gsuid_core.utils.database.api import get_uid
+
 from .draw_get_info import draw_info_img
-from ..utils.database.models import WzryBind
 from ..utils.error_reply import get_error
+from ..utils.database.models import WzryBind
 
 sv_wzry_get_info = SV('查询王者荣耀主页详细信息')
 
