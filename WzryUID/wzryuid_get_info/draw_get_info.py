@@ -1,21 +1,24 @@
 from io import BytesIO
 from pathlib import Path
-from typing import Union, Optional, Tuple
+from typing import Tuple, Union, Optional
 
 import httpx
 from PIL import Image, ImageDraw
-
 from gsuid_core.utils.fonts.fonts import core_font
 from gsuid_core.utils.image.convert import convert_img
 from gsuid_core.utils.image.image_tools import (
+    get_pic,
     get_color_bg,
     get_qq_avatar,
-    draw_pic_with_ring, get_pic, )
+    draw_pic_with_ring,
+)
+
+from ..utils.wzry_api import wzry_api
 from ..utils.error_reply import get_error
 from ..utils.resource_path import BG_PATH
-from ..utils.wzry_api import wzry_api
 
 TEXT_PATH = Path(__file__).parent / 'texture2d'
+
 
 async def draw_info_img(user_id: str, yd_user_id: str) -> Union[str, bytes]:
     oData = await wzry_api.get_user_role(yd_user_id)
@@ -35,8 +38,12 @@ async def draw_info_img(user_id: str, yd_user_id: str) -> Union[str, bytes]:
     img.paste(title, (0, 405), title)
 
     img_draw = ImageDraw.Draw(img)
-    img_draw.text((475, 437), data['roleDesc'], (10, 10, 10), core_font(40), 'mm')
-    img_draw.text((475, 495), data['roleName'], (48, 48, 48), core_font(30), 'mm')
+    img_draw.text(
+        (475, 437), data['roleDesc'], (10, 10, 10), core_font(40), 'mm'
+    )
+    img_draw.text(
+        (475, 495), data['roleName'], (48, 48, 48), core_font(30), 'mm'
+    )
     ## 标签画完
     x = 50
     y = 540
@@ -56,10 +63,17 @@ async def draw_info_img(user_id: str, yd_user_id: str) -> Union[str, bytes]:
     lstar_img = Image.open(TEXT_PATH / 'star.png')
     img.paste(lstar_img, (x + 120, 1180), lstar_img)
 
-    img_draw.text((x + 200, 1205), "x" + str(profile_data['roleCard']['rankingStar']),
-                  (48, 48, 48), core_font(40), 'mm')
+    img_draw.text(
+        (x + 200, 1205),
+        "x" + str(profile_data['roleCard']['rankingStar']),
+        (48, 48, 48),
+        core_font(40),
+        'mm',
+    )
     ## 段位画完
-    profile_index_data = await wzry_api.get_user_profile_index(yd_user_id, data['roleId'])
+    profile_index_data = await wzry_api.get_user_profile_index(
+        yd_user_id, data['roleId']
+    )
     profile_mods = profile_index_data['head']['mods']
     pinnacle_data = profile_mods[1]
     x = 580
@@ -72,40 +86,94 @@ async def draw_info_img(user_id: str, yd_user_id: str) -> Union[str, bytes]:
     pinnacle_job_img = await get_pic(url=pinnacle_job_url, size=(460, 460))
     img.paste(pinnacle_job_img, (x - 65, y + 155), pinnacle_job_img)
 
-    img_draw.text((x + 163, 880), str(pinnacle_data['content']), (224, 195, 151), core_font(32), 'mm')
+    img_draw.text(
+        (x + 163, 880),
+        str(pinnacle_data['content']),
+        (224, 195, 151),
+        core_font(32),
+        'mm',
+    )
     ### 上半部分结束
     x = 30
     y = 1235
-    hero_data = await wzry_api.get_user_profile_hero_list(yd_user_id, data['roleId'])
+    hero_data = await wzry_api.get_user_profile_hero_list(
+        yd_user_id, data['roleId']
+    )
     if isinstance(hero_data, int):
-        img_draw.text((450, 1400), "常用英雄获取失败,请前往王者营地开启陌生人可见:" + str(hero_data),
-                      (224, 200, 160), core_font(35), 'mm')
+        img_draw.text(
+            (450, 1400),
+            "常用英雄获取失败,请前往王者营地开启陌生人可见:" + str(hero_data),
+            (224, 200, 160),
+            core_font(35),
+            'mm',
+        )
     else:
         hero_list = hero_data['heroList']
         for index, hero in enumerate(hero_list):
-            img_draw.rounded_rectangle((x - 10, y - 10, x + 900, y + 210),
-                                       fill=(224, 218, 151, 33), outline=(0, 0, 0, 33), width=2, radius=18)
+            img_draw.rounded_rectangle(
+                (x - 10, y - 10, x + 900, y + 210),
+                fill=(224, 218, 151, 33),
+                outline=(0, 0, 0, 33),
+                width=2,
+                radius=18,
+            )
             basic_info = hero['basicInfo']
             hero_img_url = basic_info['heroPic']
-            hero_img = await get_pic_and_crop(hero_img_url, (165, 0, 585, 420), (200, 200))
+            hero_img = await get_pic_and_crop(
+                hero_img_url, (165, 0, 585, 420), (200, 200)
+            )
             img.paste(hero_img, (x, y), hero_img)
-            img_draw.text((x + 320, y + 40), basic_info['title'], (0, 0, 0), core_font(48), 'mm')
+            img_draw.text(
+                (x + 320, y + 40),
+                basic_info['title'],
+                (0, 0, 0),
+                core_font(48),
+                'mm',
+            )
 
-            img_draw.text((x + 480, y + 40), "总场数", (0, 0, 0), core_font(30), 'mm')
-            img_draw.text((x + 480, y + 120), str(basic_info['playNum']), (0, 0, 0), core_font(45), 'mm')
-            img_draw.text((x + 620, y + 40), "胜率", (0, 0, 0), core_font(30), 'mm')
-            img_draw.text((x + 620, y + 120), str(basic_info['winRate']), (0, 0, 0), core_font(45), 'mm')
-            img_draw.text((x + 780, y + 40), "荣耀战力", (0, 0, 0), core_font(30), 'mm')
-            img_draw.text((x + 780, y + 120), str(basic_info['heroFightPower']),
-                          get_fight_color(basic_info['heroFightPower']), core_font(45), 'mm')
+            img_draw.text(
+                (x + 480, y + 40), "总场数", (0, 0, 0), core_font(30), 'mm'
+            )
+            img_draw.text(
+                (x + 480, y + 120),
+                str(basic_info['playNum']),
+                (0, 0, 0),
+                core_font(45),
+                'mm',
+            )
+            img_draw.text(
+                (x + 620, y + 40), "胜率", (0, 0, 0), core_font(30), 'mm'
+            )
+            img_draw.text(
+                (x + 620, y + 120),
+                str(basic_info['winRate']),
+                (0, 0, 0),
+                core_font(45),
+                'mm',
+            )
+            img_draw.text(
+                (x + 780, y + 40), "荣耀战力", (0, 0, 0), core_font(30), 'mm'
+            )
+            img_draw.text(
+                (x + 780, y + 120),
+                str(basic_info['heroFightPower']),
+                get_fight_color(basic_info['heroFightPower']),
+                core_font(45),
+                'mm',
+            )
 
             honor = hero['honorTitle']
             if honor is not None:
                 honor_img_url = get_honor_img(honor['type'])
                 honor_img = await get_pic(honor_img_url, (100, 80))
                 img.paste(honor_img, (x + 275, y + 55), honor_img)
-                img_draw.text((x + 320, y + 160), honor['desc']['abbr'],
-                              get_fight_color(basic_info['heroFightPower']), core_font(27), 'mm')
+                img_draw.text(
+                    (x + 320, y + 160),
+                    honor['desc']['abbr'],
+                    get_fight_color(basic_info['heroFightPower']),
+                    core_font(27),
+                    'mm',
+                )
 
             y += 220
 
@@ -138,7 +206,11 @@ def get_honor_img(t: int):
         return "https://camp.qq.com/battle/home_v2/icon_honor_contry.png"
 
 
-async def get_pic_and_crop(url, box: Optional[Tuple[int, int, int, int]], size: Optional[Tuple[int, int]] = None):
+async def get_pic_and_crop(
+    url,
+    box: Optional[Tuple[int, int, int, int]],
+    size: Optional[Tuple[int, int]] = None,
+):
     async with httpx.AsyncClient(timeout=None) as client:
         resp = await client.get(url=url)
         pic = Image.open(BytesIO(resp.read()))

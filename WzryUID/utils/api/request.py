@@ -3,11 +3,18 @@ import uuid
 from copy import deepcopy
 from typing import Any, Dict, Union, Literal, Optional
 
+from gsuid_core.logger import logger
 from aiohttp import TCPConnector, ClientSession, ContentTypeError
 
-from gsuid_core.logger import logger
-from .api import BATTLE_DETAIL, BATTLE_HISTORY, USER_PROFILE, PROFILE_INDEX, PROFILE_HERO_LIST, ALL_ROLE_LIST_V3
 from ..database.models import WzryUser
+from .api import (
+    USER_PROFILE,
+    BATTLE_DETAIL,
+    PROFILE_INDEX,
+    BATTLE_HISTORY,
+    ALL_ROLE_LIST_V3,
+    PROFILE_HERO_LIST,
+)
 
 
 def generate_id():
@@ -76,7 +83,11 @@ class BaseWzryApi:
     async def get_user_profile_index(self, yd_user_id: str, role_id: str):
         header = deepcopy(self._HEADER)
 
-        data = {"targetUserId": yd_user_id, "recommendPrivacy": 0, "targetRoleId": role_id}
+        data = {
+            "targetUserId": yd_user_id,
+            "recommendPrivacy": 0,
+            "targetRoleId": role_id,
+        }
         raw_data = await self._wzry_request(
             PROFILE_INDEX, "POST", header, None, data
         )
@@ -85,7 +96,11 @@ class BaseWzryApi:
     async def get_user_profile_hero_list(self, yd_user_id: str, role_id: str):
         header = deepcopy(self._HEADER)
 
-        data = {"targetUserId": yd_user_id, "recommendPrivacy": 0, "targetRoleId": role_id}
+        data = {
+            "targetUserId": yd_user_id,
+            "recommendPrivacy": 0,
+            "targetRoleId": role_id,
+        }
         raw_data = await self._wzry_request(
             PROFILE_HERO_LIST, "POST", header, None, data
         )
@@ -131,7 +146,7 @@ class BaseWzryApi:
             return -61
         header["token"] = ck
         header["userid"] = uid
-        data = ("friendUserId=" + yd_user_id + "&token=" + ck + "&userId=" + uid)
+        data = "friendUserId=" + yd_user_id + "&token=" + ck + "&userId=" + uid
         header["Content-Length"] = str(data.__len__())
 
         raw_data = await self._wzry_request0(
