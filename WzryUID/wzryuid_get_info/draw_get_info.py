@@ -4,6 +4,7 @@ from typing import Tuple, Union, Optional
 
 import httpx
 from PIL import Image, ImageDraw
+
 from gsuid_core.utils.fonts.fonts import core_font
 from gsuid_core.utils.image.convert import convert_img
 from gsuid_core.utils.image.image_tools import (
@@ -12,10 +13,9 @@ from gsuid_core.utils.image.image_tools import (
     get_qq_avatar,
     draw_pic_with_ring,
 )
-
-from ..utils.wzry_api import wzry_api
 from ..utils.error_reply import get_error
 from ..utils.resource_path import BG_PATH
+from ..utils.wzry_api import wzry_api
 
 TEXT_PATH = Path(__file__).parent / 'texture2d'
 
@@ -118,65 +118,73 @@ async def draw_info_img(user_id: str, yd_user_id: str) -> Union[str, bytes]:
                 radius=18,
             )
             basic_info = hero['basicInfo']
-            hero_img_url = basic_info['heroPic']
-            hero_img = await get_pic_and_crop(
-                hero_img_url, (165, 0, 585, 420), (200, 200)
+            hero_img_url = "https://game-1255653016.file.myqcloud.com/battle_skin_1250-326/" + \
+                           str(basic_info['heroId']) + "00.jpg?imageMogr2/thumbnail/x170/crop/270x170/gravity/east"
+            hero_img = await get_pic(
+                hero_img_url, (270, 170)
             )
-            img.paste(hero_img, (x, y), hero_img)
+            img.paste(hero_img, (x, y + 15), hero_img)
             img_draw.text(
-                (x + 320, y + 40),
+                (x + 375, y + 38),
                 basic_info['title'],
                 (0, 0, 0),
                 core_font(48),
                 'mm',
             )
-
+            title_font = core_font(32)
+            content_font = core_font(46)
+            y += 42
             img_draw.text(
-                (x + 480, y + 40), "总场数", (0, 0, 0), core_font(30), 'mm'
+                (x + 365, y + 60), "总场数", (0, 0, 0), title_font, 'mm'
             )
             img_draw.text(
-                (x + 480, y + 120),
+                (x + 358, y + 120),
                 str(basic_info['playNum']),
                 (0, 0, 0),
-                core_font(45),
+                content_font,
                 'mm',
             )
             img_draw.text(
-                (x + 620, y + 40), "胜率", (0, 0, 0), core_font(30), 'mm'
+                (x + 520, y + 60), "胜率", (0, 0, 0), title_font, 'mm'
             )
             img_draw.text(
-                (x + 620, y + 120),
+                (x + 520, y + 120),
                 str(basic_info['winRate']),
                 (0, 0, 0),
-                core_font(45),
+                content_font,
                 'mm',
             )
             img_draw.text(
-                (x + 780, y + 40), "荣耀战力", (0, 0, 0), core_font(30), 'mm'
+                (x + 700, y + 60), "荣耀战力", (0, 0, 0), title_font, 'mm'
             )
             img_draw.text(
-                (x + 780, y + 120),
+                (x + 700, y + 120),
                 str(basic_info['heroFightPower']),
                 get_fight_color(basic_info['heroFightPower']),
-                core_font(45),
+                content_font,
                 'mm',
             )
-
+            y -= 42
             # 画标
             honor = hero['honorTitle']
             if honor is not None:
-                honor_img_url = get_honor_img(honor['type'])
-                honor_img = await get_pic(honor_img_url, (100, 80))
-                img.paste(honor_img, (x + 275, y + 55), honor_img)
+                honor_bg_img_url = get_honor_bg_img_url(honor['type'])
+                honor_bg_img = await get_pic(honor_bg_img_url, (64, 64))
+                img.paste(honor_bg_img, (x, y + 15), honor_bg_img)
+
+                honor_img_url = get_honor_img_url(honor['type'])
+                honor_img = await get_pic(honor_img_url, (64, 52))
+                img.paste(honor_img, (x, y + 14), honor_img)
+
                 img_draw.text(
-                    (x + 320, y + 160),
+                    (x + 650, y + 36),
                     honor['desc']['abbr'],
                     get_fight_color(basic_info['heroFightPower']),
-                    core_font(27),
+                    core_font(36),
                     'mm',
                 )
 
-            y += 220
+            y += 218
 
     all_black = Image.new('RGBA', img.size, (255, 255, 255))
     img = Image.alpha_composite(all_black, img)
@@ -196,7 +204,7 @@ def get_fight_color(power: int):
         return 255, 54, 108
 
 
-def get_honor_img(t: int):
+def get_honor_img_url(t: int):
     if t == 1:
         return "https://camp.qq.com/battle/home_v2/icon_honor_county.png"
     elif t == 2:
@@ -205,6 +213,10 @@ def get_honor_img(t: int):
         return "https://camp.qq.com/battle/home_v2/icon_honor_province.png"
     else:
         return "https://camp.qq.com/battle/home_v2/icon_honor_contry.png"
+
+
+def get_honor_bg_img_url(t: int):
+    return get_honor_img_url(t).replace("/icon", "/bg")
 
 
 async def get_pic_and_crop(
