@@ -3,11 +3,11 @@ import uuid
 from copy import deepcopy
 from typing import Any, Dict, Union, Literal, Optional
 
-from gsuid_core.logger import logger
 from aiohttp import TCPConnector, ClientSession, ContentTypeError
 
+from gsuid_core.logger import logger
+from .api import BATTLE_DETAIL, BATTLE_HISTORY, USER_PROFILE, PROFILE_INDEX, PROFILE_HERO_LIST, ALL_ROLE_LIST_V3
 from ..database.models import WzryUser
-from .api import BATTLE_DETAIL, BATTLE_HISTORY
 
 
 def generate_id():
@@ -64,6 +64,33 @@ class BaseWzryApi:
         )
         return self.unpack(raw_data)
 
+    async def get_user_profile(self, yd_user_id: str, role_id: str):
+        header = deepcopy(self._HEADER)
+
+        data = {"friendUserId": yd_user_id, "roleId": role_id, "scenario": 0}
+        raw_data = await self._wzry_request(
+            USER_PROFILE, "POST", header, None, data
+        )
+        return self.unpack(raw_data)
+
+    async def get_user_profile_index(self, yd_user_id: str, role_id: str):
+        header = deepcopy(self._HEADER)
+
+        data = {"targetUserId": yd_user_id, "recommendPrivacy": 0, "targetRoleId": role_id}
+        raw_data = await self._wzry_request(
+            PROFILE_INDEX, "POST", header, None, data
+        )
+        return self.unpack(raw_data)
+
+    async def get_user_profile_hero_list(self, yd_user_id: str, role_id: str):
+        header = deepcopy(self._HEADER)
+
+        data = {"targetUserId": yd_user_id, "recommendPrivacy": 0, "targetRoleId": role_id}
+        raw_data = await self._wzry_request(
+            PROFILE_HERO_LIST, "POST", header, None, data
+        )
+        return self.unpack(raw_data)
+
     async def get_battle_detail(
         self,
         wz_user_id: str,
@@ -87,6 +114,28 @@ class BaseWzryApi:
 
         raw_data = await self._wzry_request(
             BATTLE_DETAIL, "POST", header, None, data
+        )
+        return self.unpack(raw_data)
+
+    async def get_user_role(self, yd_user_id: str):
+        header = deepcopy(self._HEADER)
+        header["Content-Type"] = "application/x-www-form-urlencoded"
+        header["Host"] = "ssl.kohsocialapp.qq.com:10001"
+        ck = await WzryUser.get_random_cookie(yd_user_id)
+        if ck is None:
+            return -61
+        wzUser = await WzryUser.base_select_data(WzryUser, cookie=ck)
+        if wzUser is not None:
+            uid = wzUser.uid
+        else:
+            return -61
+        header["token"] = ck
+        header["userid"] = uid
+        data = ("friendUserId=" + yd_user_id + "&token=" + ck + "&userId=" + uid)
+        header["Content-Length"] = str(data.__len__())
+
+        raw_data = await self._wzry_request0(
+            ALL_ROLE_LIST_V3, "POST", header, None, data
         )
         return self.unpack(raw_data)
 
@@ -132,6 +181,58 @@ class BaseWzryApi:
                 headers=header,
                 params=params,
                 json=data,
+                timeout=300,
+            ) as resp:
+                try:
+                    raw_data = await resp.json()
+                except ContentTypeError:
+                    _raw_data = await resp.text()
+                    raw_data = {"retcode": -999, "data": _raw_data}
+                if (
+                    raw_data
+                    and 'returnCode' in raw_data
+                    and raw_data['returnCode'] != 0
+                ):
+                    return raw_data['returnCode']
+                logger.debug(raw_data)
+                return raw_data
+
+    async def _wzry_request0(
+        self,
+        url: str,
+        method: Literal["GET", "POST"] = "GET",
+        header: Dict[str, Any] = _HEADER,
+        params: Optional[Dict[str, Any]] = None,
+        data: Optional[Dict[str, Any]] = None,
+    ) -> Union[Dict, int]:
+        if "token" not in header:
+            target_user_id = (
+                data["friendUserId"]
+                if data and "friendUserId" in data
+                else None
+            )
+            ck = await WzryUser.get_random_cookie(
+                target_user_id if target_user_id else "18888888"
+            )
+            if ck is None:
+                return -61
+            wzUser = await WzryUser.base_select_data(WzryUser, cookie=ck)
+            if wzUser is not None:
+                uid = wzUser.uid
+            else:
+                return -61
+            header["token"] = ck
+            header["userid"] = uid
+
+        async with ClientSession(
+            connector=TCPConnector(verify_ssl=self.ssl_verify)
+        ) as client:
+            async with client.request(
+                method,
+                url=url,
+                headers=header,
+                params=params,
+                data=data,
                 timeout=300,
             ) as resp:
                 try:
