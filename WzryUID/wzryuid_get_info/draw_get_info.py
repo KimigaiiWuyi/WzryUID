@@ -4,7 +4,6 @@ from typing import Tuple, Union, Optional
 
 import httpx
 from PIL import Image, ImageDraw
-
 from gsuid_core.utils.fonts.fonts import core_font
 from gsuid_core.utils.image.convert import convert_img
 from gsuid_core.utils.image.image_tools import (
@@ -13,9 +12,10 @@ from gsuid_core.utils.image.image_tools import (
     get_qq_avatar,
     draw_pic_with_ring,
 )
+
+from ..utils.wzry_api import wzry_api
 from ..utils.error_reply import get_error
 from ..utils.resource_path import BG_PATH
-from ..utils.wzry_api import wzry_api
 
 TEXT_PATH = Path(__file__).parent / 'texture2d'
 
@@ -118,11 +118,12 @@ async def draw_info_img(user_id: str, yd_user_id: str) -> Union[str, bytes]:
                 radius=18,
             )
             basic_info = hero['basicInfo']
-            hero_img_url = "https://game-1255653016.file.myqcloud.com/battle_skin_1250-326/" + \
-                           str(basic_info['heroId']) + "00.jpg?imageMogr2/thumbnail/x170/crop/270x170/gravity/east"
-            hero_img = await get_pic(
-                hero_img_url, (270, 170)
+            hero_img_url = (
+                "https://game-1255653016.file.myqcloud.com/battle_skin_1250-326/"
+                + str(basic_info['heroId'])
+                + "00.jpg?imageMogr2/thumbnail/x170/crop/270x170/gravity/east"
             )
+            hero_img = await get_pic(hero_img_url, (270, 170))
             img.paste(hero_img, (x, y + 15), hero_img)
             img_draw.text(
                 (x + 375, y + 38),
@@ -144,9 +145,7 @@ async def draw_info_img(user_id: str, yd_user_id: str) -> Union[str, bytes]:
                 content_font,
                 'mm',
             )
-            img_draw.text(
-                (x + 520, y + 60), "胜率", (0, 0, 0), title_font, 'mm'
-            )
+            img_draw.text((x + 520, y + 60), "胜率", (0, 0, 0), title_font, 'mm')
             img_draw.text(
                 (x + 520, y + 120),
                 str(basic_info['winRate']),
