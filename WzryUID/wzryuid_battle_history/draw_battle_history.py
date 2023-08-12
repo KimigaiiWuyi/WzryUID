@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Tuple, Union
 
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter
 from gsuid_core.utils.fonts.fonts import core_font
 from gsuid_core.utils.image.convert import convert_img
 from gsuid_core.utils.image.image_tools import (
@@ -32,7 +32,8 @@ async def draw_history_img(user_id: str, yd_user_id: str) -> Union[str, bytes]:
     else:
         h = 2000
 
-    img = await get_color_bg(950, h, BG_PATH, True)
+    img = await get_color_bg(950, h, BG_PATH)
+    img = img.filter(ImageFilter.GaussianBlur(28))
     avatar_img = await get_qq_avatar(user_id)
     avatar_img = await draw_pic_with_ring(avatar_img, 320)
 
