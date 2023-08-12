@@ -203,7 +203,7 @@ def get_honor_img(t: int):
         return "https://camp.qq.com/battle/home_v2/icon_honor_city.png"
     elif t == 3:
         return "https://camp.qq.com/battle/home_v2/icon_honor_province.png"
-    elif t == 4:
+    else:
         return "https://camp.qq.com/battle/home_v2/icon_honor_contry.png"
 
 
