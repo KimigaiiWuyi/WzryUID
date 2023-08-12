@@ -118,8 +118,7 @@ async def draw_info_img(user_id: str, yd_user_id: str) -> Union[str, bytes]:
                 radius=18,
             )
             basic_info = hero['basicInfo']
-            hero_img_url = "https://game-1255653016.file.myqcloud.com/battle_skin_1250-326/" + \
-                           str(basic_info['heroId']) + "00.jpg?imageMogr2/thumbnail/x170/crop/270x170/gravity/east"
+            hero_img_url = get_hero_img_url(str(basic_info['heroId']))
             hero_img = await get_pic(
                 hero_img_url, (270, 170)
             )
@@ -217,6 +216,12 @@ def get_honor_img_url(t: int):
 
 def get_honor_bg_img_url(t: int):
     return get_honor_img_url(t).replace("/icon", "/bg")
+
+
+def get_hero_img_url(id: str):
+    return "https://game-1255653016.file.myqcloud.com/battle_skin_1250-326/" + \
+        id + "00.jpg?imageMogr2/thumbnail/x170/crop/" \
+             "270x170/gravity/east"
 
 
 async def get_pic_and_crop(
