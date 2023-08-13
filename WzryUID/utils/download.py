@@ -35,6 +35,12 @@ async def download_file(
     name: str,
     size: Optional[Tuple[int, int]] = None,
 ) -> Union[Image.Image, Tuple[str, Path, str], None]:
+    file_path = path / name
+    if file_path.exists():
+        if size:
+            return Image.open(file_path).resize(size)
+        return Image.open(file_path)
+
     async with ClientSession() as sess:
         try:
             async with sess.get(url) as res:
@@ -42,8 +48,9 @@ async def download_file(
         except ClientConnectorError:
             logger.warning(f"[wzry]{name}下载失败")
             return url, path, name
-        async with aiofiles.open(path / name, "wb") as f:
-            await f.write(content)
-            if size:
-                stream = BytesIO(content)
-                return Image.open(stream).resize(size)
+
+    async with aiofiles.open(path / name, "wb") as f:
+        await f.write(content)
+        if size:
+            stream = BytesIO(content)
+            return Image.open(stream).resize(size)

@@ -73,7 +73,7 @@ async def draw_info_img(user_id: str, yd_user_id: str) -> Union[str, bytes]:
     flag_name = flag_url.split('/')[-1]
     flag_img = await download_file(flag_url, ICON_PATH, flag_name, (330, 634))
     img.paste(flag_img, (x, y), flag_img)
-    img.paste(flag_img, (x, y + 360), flag_img)
+    # img.paste(flag_img, (x, y + 360), flag_img)
 
     role_job_url = profile_data['roleCard']["roleJobIcon"]
     role_job_img = await get_pic(url=role_job_url, size=(400, 400))
@@ -123,7 +123,7 @@ async def draw_info_img(user_id: str, yd_user_id: str) -> Union[str, bytes]:
     img.paste(pinnacle_job_img, (x - 65, y + 100), pinnacle_job_img)
 
     img_draw.text(
-        (x + 163, 800),
+        (x + 163, 630),
         str(pinnacle_data['content']),
         (224, 195, 100),
         core_font(32),
@@ -186,9 +186,10 @@ async def draw_info_img(user_id: str, yd_user_id: str) -> Union[str, bytes]:
             hero_img = await get_pic(hero_img_url, (270, 170))
             char.paste(hero_img, (57, 35), char_mask)
 
+            char_name = basic_info['title']
             char_draw.text(
                 (395, 70),
-                basic_info['title'],
+                char_name,
                 (0, 0, 0),
                 core_font(48),
                 'lm',
@@ -236,13 +237,20 @@ async def draw_info_img(user_id: str, yd_user_id: str) -> Union[str, bytes]:
                 honor_img = honor_img.convert('RGBA')
                 char.paste(honor_img, (260, 31), honor_img)
 
+                if len(char_name) >= 4:
+                    box = (596, 52, 910, 95)
+                    pos = (753, 75)
+                else:
+                    pos = (778, 75)
+                    box = (646, 52, 910, 95)
+
                 char_draw.rounded_rectangle(
-                    (641, 52, 905, 95),
+                    box,
                     20,
                     get_fight_color(basic_info['heroFightPower']),
                 )
                 char_draw.text(
-                    (773, 75),
+                    pos,
                     honor['desc']['abbr'],
                     'white',
                     core_font(36),
