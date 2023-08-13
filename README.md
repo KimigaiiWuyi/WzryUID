@@ -35,8 +35,12 @@ CK只需添加一个，就可以查到不隐藏战绩的个人信息了，暂未
 还没有图
 </p></details>
 
+<details><summary>当前段位 - 命令: 当前段位</summary><p>
+<a><img src="https://s2.loli.net/2023/08/14/yXWFmw2Cca3jgEd.jpg"></a>
+</p></details>
+
 <details><summary>查战绩 - 命令: 查荣耀</summary><p>
-还没有图
+<a><img src="https://s2.loli.net/2023/08/14/gFYKnW1Ma56jcPT.jpg"></a>
 </p></details>
 
 ## 丨其他

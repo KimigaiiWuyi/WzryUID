@@ -139,7 +139,7 @@ class BaseWzryApi:
         ck = await WzryUser.get_random_cookie(yd_user_id)
         if ck is None:
             return -61
-        wzUser = await WzryUser.base_select_data(WzryUser, cookie=ck)
+        wzUser = await WzryUser.base_select_data(cookie=ck)
         if wzUser is not None:
             uid = wzUser.uid
         else:
@@ -179,7 +179,7 @@ class BaseWzryApi:
             )
             if ck is None:
                 return -61
-            wzUser = await WzryUser.base_select_data(WzryUser, cookie=ck)
+            wzUser = await WzryUser.base_select_data(cookie=ck)
             if wzUser is not None:
                 uid = wzUser.uid
             else:
@@ -231,7 +231,7 @@ class BaseWzryApi:
             )
             if ck is None:
                 return -61
-            wzUser = await WzryUser.base_select_data(WzryUser, cookie=ck)
+            wzUser = await WzryUser.base_select_data(cookie=ck)
             if wzUser is not None:
                 uid = wzUser.uid
             else:
