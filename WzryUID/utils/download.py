@@ -43,8 +43,10 @@ async def download_file(
 
     async with ClientSession() as sess:
         try:
+            logger.info(f'[wzry]开始下载: {name} | 地址: {url}')
             async with sess.get(url) as res:
                 content = await res.read()
+                logger.info(f'[wzry]下载成功: {name}')
         except ClientConnectorError:
             logger.warning(f"[wzry]{name}下载失败")
             return url, path, name

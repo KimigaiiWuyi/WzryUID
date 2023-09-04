@@ -82,7 +82,7 @@ async def draw_info_img(user_id: str, yd_user_id: str) -> Union[str, bytes]:
     star_img_url: str = profile_data['roleCard']["starImg"]
     if star_img_url != '':
         sp_url = star_img_url.split('/')
-        star_name = f'{sp_url[-1]}_{sp_url[-2]}'
+        star_name = f'{sp_url[-2]}_{sp_url[-1]}'
         star_img = await download_file(
             star_img_url, ICON_PATH, star_name, (196, 72)
         )
