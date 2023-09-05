@@ -86,5 +86,5 @@ async def _get_skin_list(user_id: str, yd_user_id: str) -> Union[str, bytes]:
         x_offset = (index % 5) * 260
         y_offset = (index // 5) * 370
         bg.paste(skin_bg, (x_offset, y_offset), skin_bg)
-        
+
     return await convert_img(bg)
