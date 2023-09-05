@@ -34,8 +34,16 @@ async def _get_skin_list(user_id: str, yd_user_id: str) -> Union[str, bytes]:
         if 'iBuy' in skin:
             skin['szClass'] = skin['szClass'].replace('＋', '+')
             new_skin = data['heroSkinConfList'][skin['skinId']]
-            new_skin['iClass'] = skin['iClass']  # type: ignore
+            if skin['szClass'] in sz_list:
+                sz_c = skin['szClass']
+                new_skin['iClass'] = sz_list.index(sz_c)  # type: ignore
+            else:
+                new_skin['iClass'] = 7  # type: ignore
             result.append(new_skin)  # type: ignore
+
+    result = sorted(result, key=lambda x: x['iClass'])
+
+    result = result[:60]
 
     h = 370 * ((len(result) - 1) // 5 + 1)
 
@@ -43,9 +51,6 @@ async def _get_skin_list(user_id: str, yd_user_id: str) -> Union[str, bytes]:
     mask = Image.open(TEXT_PATH / 'mask.png')
     cover = Image.open(TEXT_PATH / 'cover.png')
 
-    result = sorted(result, key=lambda x: x['iClass'], reverse=True)
-
-    result = result[:60]
     for index, skin in enumerate(result):
         base = 'https://game-1255653016.file.myqcloud.com'
         skin_img_url = f'{base}/battle_skin_702-1236/{skin["iSkinId"]}.jpg'
