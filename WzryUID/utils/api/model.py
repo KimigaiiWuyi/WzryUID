@@ -55,7 +55,7 @@ class SkinDetail(TypedDict):
 
 
 class SkinDetailAdd(SkinDetail):
-    level: int
+    iClass: int
 
 
 class HeroType(TypedDict):

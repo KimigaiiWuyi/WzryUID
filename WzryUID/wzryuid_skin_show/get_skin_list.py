@@ -30,17 +30,12 @@ async def _get_skin_list(user_id: str, yd_user_id: str) -> Union[str, bytes]:
     # skin_type_list = skin_info['skinTypeList']
 
     result: List[SkinDetailAdd] = []
-    for skin in data['heroSkinConfList'].values():
-        i_buy = skin['iBuy']
-        if i_buy:
+    for skin in data['heroSkinList']:
+        if 'iBuy' in skin:
             skin['szClass'] = skin['szClass'].replace('＋', '+')
-            sz = skin['szClass']  # 皮肤等级
-            if sz:
-                skin['level'] = sz_list.index(sz)  # type: ignore
-            else:
-                skin['level'] = 7  # type: ignore
-                skin['szClass'] = 'D'
-            result.append(skin)  # type: ignore
+            new_skin = data['heroSkinConfList'][skin['skinId']]
+            new_skin['iClass'] = skin['iClass']  # type: ignore
+            result.append(new_skin)  # type: ignore
 
     h = 370 * ((len(result) - 1) // 5 + 1)
 
@@ -48,8 +43,12 @@ async def _get_skin_list(user_id: str, yd_user_id: str) -> Union[str, bytes]:
     mask = Image.open(TEXT_PATH / 'mask.png')
     cover = Image.open(TEXT_PATH / 'cover.png')
 
+    result = sorted(result, key=lambda x: x['iClass'], reverse=True)
+
+    result = result[:60]
     for index, skin in enumerate(result):
-        skin_img_url = f'https://game-1255653016.file.myqcloud.com/battle_skin_702-1236/{skin["iSkinId"]}.jpg'
+        base = 'https://game-1255653016.file.myqcloud.com'
+        skin_img_url = f'{base}/battle_skin_702-1236/{skin["iSkinId"]}.jpg'
         # skin_img_url = skin['szLargeIcon']
         # skin_img_url = skin['szSmallIcon']
         sz = skin['szClass']  # 皮肤等级
@@ -86,5 +85,5 @@ async def _get_skin_list(user_id: str, yd_user_id: str) -> Union[str, bytes]:
         x_offset = (index % 5) * 260
         y_offset = (index // 5) * 370
         bg.paste(skin_bg, (x_offset, y_offset), skin_bg)
-        
+
     return await convert_img(bg)
