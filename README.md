@@ -22,17 +22,21 @@
 
 ## 丨用前注意
 
-需要添加营地CK才能使用功能,
+需要添加营地CK才能使用功能, CK请自行抓包
 
-使用CK暂时不知是否会造成风险，**建议使用小号CK！！**
+使用CK暂时不知是否会造成风险，**强烈建议使用小号CK！！**
 
 CK只需添加一个，就可以查到不隐藏战绩的个人信息了，暂未发现有次数CD限制
 
-命令：`王者添加CK`
+命令（私聊）：`王者添加CK`
 
 ## 丨功能
 <details><summary>绑定切换删除UID - 命令: 王者绑定UID、王者删除UID、王者切换UID</summary><p>
 还没有图
+</p></details>
+
+<details><summary>皮肤墙 - 命令: 皮肤墙</summary><p>
+<a><img src="https://s2.loli.net/2023/09/07/BPLFpys4fdR15u8.jpg"></a>
 </p></details>
 
 <details><summary>当前段位 - 命令: 当前段位</summary><p>
