@@ -53,6 +53,8 @@ async def download_file(
 
     async with aiofiles.open(path / name, "wb") as f:
         await f.write(content)
+        stream = BytesIO(content)
         if size:
-            stream = BytesIO(content)
             return Image.open(stream).resize(size)
+        else:
+            return Image.open(stream)
