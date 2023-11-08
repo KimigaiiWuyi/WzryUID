@@ -91,7 +91,7 @@ async def _get_skin_list(user_id: str, yd_user_id: str) -> Union[str, bytes]:
         skin_img_url = f'{base}/battle_skin_702-1236/{skin["iSkinId"]}.jpg'
         # skin_img_url = skin['szLargeIcon']
         # skin_img_url = skin['szSmallIcon']
-        sz = skin['szClass']  # 皮肤等级
+        sz = skin['szClass'].replace('＋', '+')  # 皮肤等级
         skin_bg = Image.open(TEXT_PATH / f'{sz}.png')
         sz_title = skin['szTitle']  # 皮肤名
         hero_name = skin['szHeroTitle']  # 英雄名

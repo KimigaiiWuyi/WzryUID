@@ -13,9 +13,10 @@ sv_wzry_skin_list = SV('查询王者荣耀皮肤列表')
 
 @sv_wzry_skin_list.on_command('皮肤墙')
 async def send_wzry_skin_list(bot: Bot, ev: Event):
+    user_id = ev.at if ev.at else ev.user_id
     uid = await get_uid(bot, ev, WzryBind)
     if uid is None:
         return await bot.send(get_error(-41))
     logger.info(f'[皮肤墙] uid:{uid}')
-    im = await _get_skin_list(ev.user_id, uid)
+    im = await _get_skin_list(user_id, uid)
     await bot.send(im)
