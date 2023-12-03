@@ -8,6 +8,7 @@ from ..utils.database.models import WzryBind
 from ..utils.error_reply import get_error
 
 sv_wzry_history = SV('查询王者荣耀战绩')
+sv_wzry_history_filter = SV('查询王者荣耀战绩')
 
 
 @sv_wzry_history.on_command(('查荣耀'))
@@ -20,7 +21,7 @@ async def send_wzry_history(bot: Bot, ev: Event):
     await bot.send(im)
 
 
-@sv_wzry_history.on_prefix(('查荣耀'))
+@sv_wzry_history_filter.on_prefix(('查荣耀'))
 async def send_wzry_history(bot: Bot, ev: Event):
     uid = await get_uid(bot, ev, WzryBind)
     if uid is None:
