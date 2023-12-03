@@ -7,8 +7,8 @@ from .draw_battle_history import draw_history_img
 from ..utils.database.models import WzryBind
 from ..utils.error_reply import get_error
 
-sv_wzry_history = SV('查询王者荣耀战绩')
 sv_wzry_history_filter = SV('查询王者荣耀战绩', priority=10)
+sv_wzry_history = SV('查询王者荣耀战绩')
 
 
 @sv_wzry_history_filter.on_prefix(('查荣耀'))
