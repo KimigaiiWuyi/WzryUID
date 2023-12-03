@@ -10,6 +10,7 @@ from .draw_battle_history import draw_history_img
 
 sv_wzry_history = SV('查询王者荣耀战绩')
 
+
 @sv_wzry_history.on_command(('查荣耀'))
 async def send_wzry_history(bot: Bot, ev: Event):
     uid = await get_uid(bot, ev, WzryBind)
