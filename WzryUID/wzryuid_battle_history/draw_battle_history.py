@@ -18,8 +18,8 @@ from ..utils.resource_path import BG_PATH, ICON_PATH, AVATAR_PATH
 TEXT_PATH = Path(__file__).parent / 'texture2d'
 
 
-async def draw_history_img(user_id: str, yd_user_id: str) -> Union[str, bytes]:
-    data = await wzry_api.get_battle_history(yd_user_id)
+async def draw_history_img(user_id: str, yd_user_id: str, option: int = 0) -> Union[str, bytes]:
+    data = await wzry_api.get_battle_history(yd_user_id, option)
     if isinstance(data, int):
         return get_error(data)
 
