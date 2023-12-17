@@ -40,6 +40,8 @@ async def _get_skin_list(user_id: str, yd_user_id: str) -> Union[str, bytes]:
     result: List[SkinDetailAdd] = []
     for skin in data['heroSkinList']:
         if 'iBuy' in skin:
+            if skin['szClass'] is None:
+                continue
             skin['szClass'] = skin['szClass'].replace('＋', '+')
             new_skin = data['heroSkinConfList'][skin['skinId']]
             if skin['szClass'] in sz_list:
