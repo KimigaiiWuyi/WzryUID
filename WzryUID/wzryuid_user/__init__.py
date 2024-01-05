@@ -24,13 +24,13 @@ wzry_cookie_add = SV("王者CK添加", area="DIRECT")
     block=True,
 )
 async def send_wz_link_uid_msg(bot: Bot, ev: Event):
-    await bot.logger.info("开始执行[绑定/解绑用户信息]")
+    await bot.logger.info("[wzry] 开始执行[绑定/解绑用户信息]")
     qid = ev.user_id
-    await bot.logger.info("[绑定/解绑]UserID: {}".format(qid))
+    await bot.logger.info("[wzry] [绑定/解绑]UserID: {}".format(qid))
 
     uid = ev.text.strip()
     if uid and not uid.isdigit():
-        return await bot.send("你输入了错误的格式!")
+        return await bot.send("[wzry] 你输入了错误的格式!")
 
     if "绑定" in ev.command:
         data = await WzryBind.insert_uid(qid, ev.bot_id, uid, ev.group_id)
@@ -38,26 +38,26 @@ async def send_wz_link_uid_msg(bot: Bot, ev: Event):
             bot,
             data,
             {
-                0: f"绑定UID{uid}成功！",
-                -1: f"UID{uid}的位数不正确！",
-                -2: f"UID{uid}已经绑定过了！",
-                -3: "你输入了错误的格式!",
+                0: f"[wzry] 绑定UID{uid}成功！",
+                -1: f"[wzry] UID{uid}的位数不正确！",
+                -2: f"[wzry] UID{uid}已经绑定过了！",
+                -3: "[wzry] 你输入了错误的格式!",
             },
         )
     elif "切换" in ev.command:
         retcode = await WzryBind.switch_uid_by_game(qid, ev.bot_id, uid)
         if retcode == 0:
-            return await bot.send(f"切换UID{uid}成功！")
+            return await bot.send(f"[wzry] 切换UID{uid}成功！")
         else:
-            return await bot.send(f"尚未绑定该UID{uid}")
+            return await bot.send(f"[wzry] 尚未绑定该UID{uid}")
     else:
         data = await WzryBind.delete_uid(qid, ev.bot_id, uid)
         return await send_diff_msg(
             bot,
             data,
             {
-                0: f"删除UID{uid}成功！",
-                -1: f"该UID{uid}不在已绑定列表中！",
+                0: f"[wzry] 删除UID{uid}成功！",
+                -1: f"[wzry] 该UID{uid}不在已绑定列表中！",
             },
         )
 
