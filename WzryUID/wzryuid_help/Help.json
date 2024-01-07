@@ -1,0 +1,97 @@
+{
+  "基础服务": {
+    "desc": "需要先绑定uid",
+    "data": [
+      {
+        "name": "王者绑定uid",
+        "desc": "绑定你的王者UID",
+        "eg": "王者绑定uid123456",
+        "need_ck": false,
+        "need_sk": false,
+        "need_admin": false
+      },
+      {
+        "name": "王者删除uid",
+        "desc": "删除你的王者UID",
+        "eg": "王者删除uid123456",
+        "need_ck": false,
+        "need_sk": false,
+        "need_admin": false
+      },
+      {
+        "name": "王者切换uid",
+        "desc": "切换你的王者UID",
+        "eg": "王者切换uid123456",
+        "need_ck": false,
+        "need_sk": false,
+        "need_admin": false
+      },
+      {
+        "name": "王者添加CK",
+        "desc": "往数据库添加一个营地CK",
+        "eg": "王者添加CK18-HU",
+        "need_ck": false,
+        "need_sk": false,
+        "need_admin": false
+      }
+    ]
+  },
+  "查询服务": {
+    "desc": "查询一些基本信息, 需要营地打开陌生人可见",
+    "data": [
+      {
+        "name": "当前段位",
+        "desc": "基本段位信息一览",
+        "eg": "当前段位100740568",
+        "need_ck": true,
+        "need_sk": false,
+        "need_admin": false
+      },
+      {
+        "name": "查荣耀",
+        "desc": "查询自己最近的王者战绩",
+        "eg": "查荣耀",
+        "need_ck": true,
+        "need_sk": false,
+        "need_admin": false
+      },
+      {
+        "name": "查荣耀排位赛",
+        "desc": "查询自己最近的排位赛战绩",
+        "eg": "查荣耀排位赛",
+        "need_ck": true,
+        "need_sk": false,
+        "need_admin": false
+      },
+      {
+        "name": "查荣耀巅峰赛",
+        "desc": "查询自己最近的巅峰赛战绩",
+        "eg": "查荣耀巅峰赛",
+        "need_ck": true,
+        "need_sk": false,
+        "need_admin": false
+      },
+      {
+        "name": "皮肤墙",
+        "desc": "查询自己拥有的皮肤",
+        "eg": "皮肤墙",
+        "need_ck": true,
+        "need_sk": false,
+        "need_admin": false
+      }
+    ]
+  },
+  "其他服务": {
+    "desc": "一些杂项服务",
+    "data": [
+      {
+        "name": "王者帮助",
+        "desc": "呼出该帮助界面",
+        "eg": "王者帮助",
+        "need_ck": false,
+        "need_sk": false,
+        "need_admin": false
+      }
+    ]
+  }
+}
