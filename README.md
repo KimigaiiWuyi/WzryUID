@@ -1,9 +1,9 @@
 # WzryUID
 
 <p align="center">
-  <a href="https://github.com/KimigaiiWuyi/WzryUID"><img src="https://s2.loli.net/2023/08/05/ID3Wxq6tSGbo7OM.png" width="256" height="256" alt="StarRailUID"></a>
+  <a href="https://github.com/KimigaiiWuyi/WzryUID"><img src="https://s2.loli.net/2024/01/07/axQ4wLcNHyO9RUr.png" width="256" height="256" alt="WzryUID"></a>
 </p>
-<h1 align = "center">WzryUID 0.1</h1>
+<h1 align = "center">WzryUID 0.2</h1>
 <h4 align = "center">🚧支持OneBot(QQ)、QQ频道、微信、开黑啦、Telegram的全功能某MOBA游戏Bot插件🚧</h4>
 <div align = "center">
         <a href="http://docs.gsuid.gbots.work/#/" target="_blank">安装文档</a>
@@ -14,11 +14,11 @@
 
 > **注意：该插件为[早柚核心(gsuid_core)](https://github.com/Genshin-bots/gsuid_core)的扩展，具体安装方式可参考[GenshinUID](https://github.com/KimigaiiWuyi/GenshinUID)**
 >
-> **如果已经是最新版本的`gsuid_core`, 可以直接对bot发送`core安装插件wzryuid`，然后重启core以应用安装**
->
-> 支持NoneBot2 & HoshinoBot & ZeroBot & YunzaiBot的MOBA游戏Bot插件
->
-> 🚧插件目前还在施工中，可以使用，功能快速迭代中...🚧
+> 支持NoneBot2 & HoshinoBot & ZeroBot & YunzaiBot & Koishi的某Moba游戏的Bot插件
+
+## 丨安装方式
+1. 发送`core安装插件wzryuid`
+2. 发送`gs重启`应用插件
 
 ## 丨用前注意
 

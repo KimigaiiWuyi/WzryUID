@@ -16,7 +16,10 @@ class WzryUser(User, table=True):
 @site.register_admin
 class WzryBindadmin(GsAdminModel):
     pk_name = 'id'
-    page_schema = PageSchema(label='王者绑定管理', icon='fa fa-users')
+    page_schema = PageSchema(
+        label='王者绑定管理',
+        icon='fa fa-users',
+    )  # type: ignore
 
     # 配置管理模型
     model = WzryBind
@@ -25,7 +28,10 @@ class WzryBindadmin(GsAdminModel):
 @site.register_admin
 class WzryUseradmin(GsAdminModel):
     pk_name = 'id'
-    page_schema = PageSchema(label='王者CK管理', icon='fa fa-database')
+    page_schema = PageSchema(
+        label='王者CK管理',
+        icon='fa fa-database',
+    )  # type: ignore
 
     # 配置管理模型
     model = WzryUser
