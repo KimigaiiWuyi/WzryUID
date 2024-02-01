@@ -20,10 +20,13 @@ async def send_wzry_history(bot: Bot, ev: Event):
     option = 0
     if name.startswith("排位"):
         option = 1
+    elif name.startswith("标准"):
+        option = 2
     elif name.startswith("娱乐"):
         option = 3
     elif name.startswith("巅峰"):
         option = 4
+
     logger.info(f'[查荣耀] uid:{uid}')
     im = await draw_history_img(ev.user_id, uid, option)
     await bot.send(im)
