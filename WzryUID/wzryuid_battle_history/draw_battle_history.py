@@ -109,7 +109,9 @@ async def draw_history_img(
         img.paste(babg, (0, 540 + index * 120), babg)
 
     img_draw = ImageDraw.Draw(img)
-    img_draw.text((475, 437), '王者荣耀战绩', (10, 10, 10), core_font(40), 'mm')
+    img_draw.text(
+        (475, 437), '王者荣耀战绩', (10, 10, 10), core_font(40), 'mm'
+    )
     img_draw.text((475, 495), game_text, text_color, core_font(30), 'mm')
     all_black = Image.new('RGBA', img.size, (255, 255, 255))
     img = Image.alpha_composite(all_black, img)
