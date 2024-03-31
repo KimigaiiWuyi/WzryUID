@@ -3,11 +3,12 @@ from gsuid_core.bot import Bot
 from gsuid_core.models import Event
 from gsuid_core.utils.message import send_diff_msg
 
-from .deal_ck import deal_wz_ck
 from ..utils.database.models import WzryBind
+from .deal_ck import deal_wz_ck, delete_wz_ck
 
 wzry_user_info = SV("王者用户绑定")
 wzry_cookie_add = SV("王者CK添加", area="DIRECT")
+wzry_cookie_delete = SV("王者CK删除", area="DIRECT", pm=0)
 
 
 @wzry_user_info.on_command(
@@ -65,4 +66,13 @@ async def send_wz_link_uid_msg(bot: Bot, ev: Event):
 @wzry_cookie_add.on_prefix(("王者添加ck", "王者添加CK"))
 async def send_wz_add_ck_msg(bot: Bot, ev: Event):
     im = await deal_wz_ck(ev.bot_id, ev.text, ev.user_id)
+    await bot.send(im)
+
+
+@wzry_cookie_delete.on_prefix(("王者删除ck", "王者删除CK"))
+async def send_wz_delete_ck_msg(bot: Bot, ev: Event):
+    uid = ev.text.strip()
+    if not uid or len(uid) <= 4:
+        return await bot.send('末尾需要跟正确的UID, 例如 王者删除ck1234567')
+    im = await delete_wz_ck(uid)
     await bot.send(im)
