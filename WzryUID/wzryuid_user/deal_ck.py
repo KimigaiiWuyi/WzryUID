@@ -12,3 +12,10 @@ async def deal_wz_ck(bot_id: str, cookie: str, user_id: str) -> str:
     uid, ck = _ck[0], _ck[1]
     await WzryUser.insert_data(user_id, bot_id, cookie=ck, uid=uid)
     return '添加成功!'
+
+
+async def delete_wz_ck(uid: str) -> str:
+    if await WzryUser.delete_row(uid=uid):
+        return '删除成功!'
+    else:
+        return '删除失败...不存在该UID的CK...'

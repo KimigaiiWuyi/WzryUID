@@ -1,1 +1,1 @@
-WzryUID_version = '0.2'
+WzryUID_version = '0.3.1'
