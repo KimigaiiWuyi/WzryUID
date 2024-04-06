@@ -8,6 +8,8 @@ AVATAR_PATH = MAIN_PATH / 'avatar'
 ICON_PATH = MAIN_PATH / 'icon'
 SKIN_PATH = MAIN_PATH / 'skin'
 
+TEMP_PATH = MAIN_PATH / 'temp'
+
 
 def init_dir():
     for i in [
@@ -15,6 +17,7 @@ def init_dir():
         ICON_PATH,
         AVATAR_PATH,
         SKIN_PATH,
+        TEMP_PATH,
     ]:
         i.mkdir(parents=True, exist_ok=True)
 
