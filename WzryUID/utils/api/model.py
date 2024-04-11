@@ -103,10 +103,10 @@ class HeroData(TypedDict):
 class Tier(TypedDict):
     desc: str
     label: str
-    list: list[HeroData]
+    list: List[HeroData]
 
 
 class HeroRankList(TypedDict):
     jumpUrl: str
     updateTime: str
-    resultList: list[Tier]
+    resultList: List[Tier]
