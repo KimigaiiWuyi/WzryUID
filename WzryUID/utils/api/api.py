@@ -18,3 +18,6 @@ PROFILE_HERO_LIST = f'{MGAME_URL}/profile/herolist'
 # 特殊
 ALL_ROLE_LIST_V3 = f'{GAME_URL}/game/allrolelistv3'
 SKIN_LIST = f'{GAME_URL}/play/h5getheroskinlist'
+
+# 资料信息
+HERO_RANK_LIST = f'{MAIN_URL}/hero/getmaintranklist'

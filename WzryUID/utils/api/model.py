@@ -90,3 +90,23 @@ class SkinInfo(TypedDict):
     heroSkinList: List[Skin]
     sortedHeroSkinList: List[List[str]]
     heroSkinConfList: Dict[str, SkinDetail]
+
+
+class HeroData(TypedDict):
+    heroId: int
+    heroName: str
+    heroIcon: str
+    jumpUrl: str
+    heroCareer: str
+
+
+class Tier(TypedDict):
+    desc: str
+    label: str
+    list: list[HeroData]
+
+
+class HeroRankList(TypedDict):
+    jumpUrl: str
+    updateTime: str
+    resultList: list[Tier]

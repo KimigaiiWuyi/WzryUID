@@ -6,14 +6,15 @@ from typing import Any, Dict, Tuple, Union, Literal, Optional, cast
 from gsuid_core.logger import logger
 from aiohttp import FormData, TCPConnector, ClientSession, ContentTypeError
 
-from .model import SkinInfo
 from ..database.models import WzryUser
+from .model import SkinInfo, HeroRankList
 from .api import (
     SKIN_LIST,
     USER_PROFILE,
     BATTLE_DETAIL,
     PROFILE_INDEX,
     BATTLE_HISTORY,
+    HERO_RANK_LIST,
     ALL_ROLE_LIST_V3,
     PROFILE_HERO_LIST,
 )
@@ -194,6 +195,30 @@ class BaseWzryApi:
             BATTLE_DETAIL, "POST", header, None, data
         )
         return self.unpack(raw_data)
+
+    async def get_hero_rank_list(
+        self,
+        segment: int = 1,
+        position: int = 0,
+    ):
+        '''
+        segment: 5(赛事),4(顶端排位),3(巅峰赛1350),2(所有段位),1(所有段位)
+        position: 5(打野),4(游走),3(发育),2(中路),1(对抗),0(全部)
+        '''
+        header = deepcopy(self._HEADER)
+
+        data = {
+            "recommendPrivacy": 0,
+            "segment": segment,
+            "position": position,
+        }
+
+        raw_data = await self._wzry_request(
+            HERO_RANK_LIST, "POST", header, None, data
+        )
+        if isinstance(raw_data, Dict):
+            return cast(HeroRankList, raw_data['data'])
+        return raw_data
 
     async def get_user_role(self, yd_user_id: str):
         header = deepcopy(self._HEADER)
