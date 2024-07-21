@@ -82,13 +82,13 @@ async def draw_history_img(
 
         if battle["desc"] != "":
             babg_draw.rectangle(
-                (395, 45, 495, 85),
+                (455, 45, 495, 85),
                 fill=(255, 247, 247, 33),
                 outline=(0, 0, 0, 33),
                 width=2,
             )
             babg_draw.text(
-                (405, 65), battle['desc'], bar_color, core_font(26), 'lm'
+                (465, 65), battle['desc'], bar_color, core_font(26), 'lm'
             )
 
         babg_draw.text(
