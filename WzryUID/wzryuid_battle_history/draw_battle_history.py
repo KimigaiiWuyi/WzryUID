@@ -82,9 +82,9 @@ async def draw_history_img(
 
         if battle["desc"] != "":
             babg_draw.rectangle(
-                (455, 45, 495, 85),
-                fill=(255, 247, 247, 33),
-                outline=(0, 0, 0, 33),
+                (455, 45, 555, 85),
+                fill=(241, 224, 198, 33),
+                outline=(100, 35, 0, 56),
                 width=2,
             )
             babg_draw.text(
