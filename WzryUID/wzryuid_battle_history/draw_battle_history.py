@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Tuple, Union
 
 from PIL import Image, ImageDraw, ImageFilter
+
 from gsuid_core.utils.fonts.fonts import core_font
 from gsuid_core.utils.image.convert import convert_img
 from gsuid_core.utils.image.image_tools import (
@@ -9,11 +10,10 @@ from gsuid_core.utils.image.image_tools import (
     get_qq_avatar,
     draw_pic_with_ring,
 )
-
-from ..utils.wzry_api import wzry_api
-from ..utils.error_reply import get_error
 from ..utils.download import download_file
-from ..utils.resource_path import BG_PATH, ICON_PATH, AVATAR_PATH
+from ..utils.error_reply import get_error
+from ..utils.resource_path import BG_PATH, ICON_PATH, AVATAR_PATH, SKILL_PATH, EQUIP_PATH
+from ..utils.wzry_api import wzry_api
 
 TEXT_PATH = Path(__file__).parent / 'texture2d'
 
@@ -45,8 +45,10 @@ async def draw_history_img(
     img.paste(avatar_img, (310, 70), avatar_img)
     img.paste(title, (0, 405), title)
     hero_mask = Image.open(TEXT_PATH / 'avatar_mask.png')
+    skill_mask = Image.open(TEXT_PATH / 'skill_mask.png')
 
     text_color = (48, 48, 48)
+    toAppRoleId = None
     for index, battle in enumerate(battle_data):
         is_win = True if battle['gameresult'] == 1 else False
         date = battle["gametime"]
@@ -59,13 +61,72 @@ async def draw_history_img(
             babg = Image.open(TEXT_PATH / 'lose_bg.png')
             bar_color = (255, 66, 66)
 
-        hero_path = AVATAR_PATH / f'{battle["heroId"]}.png'
-        if not hero_path.exists():
-            await download_file(
-                battle["heroIcon"], AVATAR_PATH, f'{battle["heroId"]}.png'
-            )
+        if toAppRoleId is None:
+            battleDetailUrl: str = battle['battleDetailUrl']
+            i0 = battleDetailUrl.index("&toAppRoleId=")
+            i1 = battleDetailUrl.index("&toGameRoleId=")
+            toAppRoleId = battleDetailUrl[i0 + 13: i1]
 
-        hero_img = Image.open(hero_path).resize((100, 100))
+        detail_data = await wzry_api.get_battle_detail(toAppRoleId, battle['gameSvrId'], battle['relaySvrId'],
+                                                       battle['gameSeq'], battle['battleType'])
+        self_data = None
+
+        hero_path = AVATAR_PATH / f'{battle["heroId"]}.png'
+        icon_path = battle["heroIcon"]
+        name_path = f'{battle["heroId"]}.png'
+
+        if not isinstance(detail_data, int):
+            detail_data['redRoles'].extend(detail_data['blueRoles'])
+            all_roles = detail_data['redRoles']
+
+            for ro0 in all_roles:
+                if self_data is None:
+                    basicInfo = ro0['basicInfo']
+                    isMe = basicInfo['isMe']
+                    if bool(isMe):
+                        self_data = ro0
+
+            skin0 = self_data['battleRecords']['usedSkin']
+
+            if skin0 is not None:
+                skin_id = skin0['skinId']
+                hero_path = AVATAR_PATH / f'{battle["heroId"]}-{skin_id}.png'
+                icon_path = skin0['skinIcon']
+                name_path = f'{battle["heroId"]}-{skin0["skinId"]}.png'
+            # 画召唤师技能
+            battle_records = self_data['battleRecords']
+            skill = battle_records['skill']
+            skill_id = skill['skillId']
+            skill_path = SKILL_PATH / f'{skill_id}.png'
+            if not skill_path.exists():
+                await download_file(skill['skillIcon'], SKILL_PATH, f'{skill_id}.png')
+            skill_img = Image.open(skill_path)
+            skill_img = skill_img.resize((45, 45))
+            babg.paste(skill_img, (390, 65), skill_mask)
+            # 画装备
+            equips = battle_records['finalEquips']
+            eix = 1
+            eiy = 0
+            for ei0, equip in enumerate(equips):
+                equip_id = equip['equipId']
+                equip_path = EQUIP_PATH / f'{equip_id}.png'
+                if not equip_path.exists():
+                    await download_file(equip['equipIcon'], EQUIP_PATH, f'{equip_id}.png')
+                equip_img = Image.open(equip_path)
+                equip_img = equip_img.resize((45, 45))
+                babg.paste(equip_img, (405 + (eix * 50), int(eiy * 50 + 15)), skill_mask)
+                eix = eix + 1
+                if eix == 4:
+                    eiy = eiy + 1
+                    eix = 1
+
+        if not hero_path.exists():
+            await download_file(icon_path, AVATAR_PATH, name_path)
+
+        hero_img = Image.open(hero_path)
+        if hero_img.size[0] != hero_img.size[1]:
+            hero_img = hero_img.crop((0, 0, hero_img.size[0], hero_img.size[0]))
+        hero_img = hero_img.resize((100, 100))
         babg.paste(hero_img, (79, 9), hero_mask)
         babg.paste(ring, (78, 8), ring)
 
@@ -82,14 +143,14 @@ async def draw_history_img(
 
         if battle["desc"] != "":
             babg_draw.rectangle(
-                (455, 45, 555, 85),
+                (636, 10, 676, 110),
                 fill=(241, 224, 198, 33),
                 outline=(100, 35, 0, 56),
                 width=2,
             )
-            babg_draw.text(
-                (465, 65), battle['desc'], bar_color, core_font(26), 'lm'
-            )
+            for ie0, e1 in enumerate(battle['desc']):
+                babg_draw.text(
+                    (644, 30 + (ie0 * 30)), e1, bar_color, core_font(26), 'lm')
 
         babg_draw.text(
             (210, 83),
@@ -101,10 +162,10 @@ async def draw_history_img(
         babg_draw.text((855, 94), date, text_color, core_font(20), 'rm')
 
         if battle['evaluateUrlV2']:
-            await paste_icon(battle['evaluateUrlV2'], babg, (622, 33))
+            await paste_icon(battle['evaluateUrlV2'], babg, (755, 10))
 
         if battle['mvpUrlV2']:
-            await paste_icon(battle['mvpUrlV2'], babg, (763, 33))
+            await paste_icon(battle['mvpUrlV2'], babg, (755, 45))
 
         img.paste(babg, (0, 540 + index * 120), babg)
 
