@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import Tuple, Union
 
 from PIL import Image, ImageDraw, ImageFilter
-
 from gsuid_core.utils.fonts.fonts import core_font
 from gsuid_core.utils.image.convert import convert_img
 from gsuid_core.utils.image.image_tools import (
@@ -10,8 +9,10 @@ from gsuid_core.utils.image.image_tools import (
     get_qq_avatar,
     draw_pic_with_ring,
 )
-from ..utils.download import download_file
+
+from ..utils.wzry_api import wzry_api
 from ..utils.error_reply import get_error
+from ..utils.download import download_file
 from ..utils.resource_path import (
     BG_PATH,
     ICON_PATH,
@@ -19,7 +20,6 @@ from ..utils.resource_path import (
     SKILL_PATH,
     AVATAR_PATH,
 )
-from ..utils.wzry_api import wzry_api
 
 TEXT_PATH = Path(__file__).parent / 'texture2d'
 
@@ -73,7 +73,7 @@ async def draw_history_img(
             if len(battleDetailUrl) > 0:
                 i0 = battleDetailUrl.index("&toAppRoleId=")
                 i1 = battleDetailUrl.index("&toGameRoleId=")
-                toAppRoleId = battleDetailUrl[i0 + 13: i1]  # noqa: E203
+                toAppRoleId = battleDetailUrl[i0 + 13 : i1]  # noqa: E203
 
         if toAppRoleId is None:
             detail_data = -1
