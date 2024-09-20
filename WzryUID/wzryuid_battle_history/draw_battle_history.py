@@ -63,12 +63,16 @@ async def draw_history_img(
 
         if toAppRoleId is None:
             battleDetailUrl: str = battle['battleDetailUrl']
-            i0 = battleDetailUrl.index("&toAppRoleId=")
-            i1 = battleDetailUrl.index("&toGameRoleId=")
-            toAppRoleId = battleDetailUrl[i0 + 13: i1]
+            if len(battleDetailUrl) > 0:
+                i0 = battleDetailUrl.index("&toAppRoleId=")
+                i1 = battleDetailUrl.index("&toGameRoleId=")
+                toAppRoleId = battleDetailUrl[i0 + 13: i1]
 
-        detail_data = await wzry_api.get_battle_detail(toAppRoleId, battle['gameSvrId'], battle['relaySvrId'],
-                                                       battle['gameSeq'], battle['battleType'])
+        if toAppRoleId is None:
+            detail_data = -1
+        else:
+            detail_data = await wzry_api.get_battle_detail(toAppRoleId, battle['gameSvrId'], battle['relaySvrId'],
+                                                           battle['gameSeq'], battle['battleType'])
         self_data = None
 
         hero_path = AVATAR_PATH / f'{battle["heroId"]}.png'
