@@ -66,7 +66,7 @@ async def draw_history_img(
             if len(battleDetailUrl) > 0:
                 i0 = battleDetailUrl.index("&toAppRoleId=")
                 i1 = battleDetailUrl.index("&toGameRoleId=")
-                toAppRoleId = battleDetailUrl[i0 + 13: i1]
+                toAppRoleId = battleDetailUrl[i0 + 13: i1]  # 从数据链接中取 请求对局详情必要参数 对应账号
 
         if toAppRoleId is None:
             detail_data = -1
