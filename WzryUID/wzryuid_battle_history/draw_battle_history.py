@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import Tuple, Union
 
 from PIL import Image, ImageDraw, ImageFilter
-
 from gsuid_core.utils.fonts.fonts import core_font
 from gsuid_core.utils.image.convert import convert_img
 from gsuid_core.utils.image.image_tools import (
@@ -10,10 +9,17 @@ from gsuid_core.utils.image.image_tools import (
     get_qq_avatar,
     draw_pic_with_ring,
 )
-from ..utils.download import download_file
-from ..utils.error_reply import get_error
-from ..utils.resource_path import BG_PATH, ICON_PATH, AVATAR_PATH, SKILL_PATH, EQUIP_PATH
+
 from ..utils.wzry_api import wzry_api
+from ..utils.error_reply import get_error
+from ..utils.download import download_file
+from ..utils.resource_path import (
+    BG_PATH,
+    ICON_PATH,
+    EQUIP_PATH,
+    SKILL_PATH,
+    AVATAR_PATH,
+)
 
 TEXT_PATH = Path(__file__).parent / 'texture2d'
 
@@ -66,13 +72,18 @@ async def draw_history_img(
             if len(battleDetailUrl) > 0:
                 i0 = battleDetailUrl.index("&toAppRoleId=")
                 i1 = battleDetailUrl.index("&toGameRoleId=")
-                toAppRoleId = battleDetailUrl[i0 + 13: i1]
+                toAppRoleId = battleDetailUrl[i0 + 13 : i1]
 
         if toAppRoleId is None:
             detail_data = -1
         else:
-            detail_data = await wzry_api.get_battle_detail(toAppRoleId, battle['gameSvrId'], battle['relaySvrId'],
-                                                           battle['gameSeq'], battle['battleType'])
+            detail_data = await wzry_api.get_battle_detail(
+                toAppRoleId,
+                battle['gameSvrId'],
+                battle['relaySvrId'],
+                battle['gameSeq'],
+                battle['battleType'],
+            )
         self_data = None
 
         hero_path = AVATAR_PATH / f'{battle["heroId"]}.png'
@@ -103,7 +114,9 @@ async def draw_history_img(
             skill_id = skill['skillId']
             skill_path = SKILL_PATH / f'{skill_id}.png'
             if not skill_path.exists():
-                await download_file(skill['skillIcon'], SKILL_PATH, f'{skill_id}.png')
+                await download_file(
+                    skill['skillIcon'], SKILL_PATH, f'{skill_id}.png'
+                )
             skill_img = Image.open(skill_path)
             skill_img = skill_img.resize((45, 45))
             babg.paste(skill_img, (390, 65), skill_mask)
@@ -115,10 +128,16 @@ async def draw_history_img(
                 equip_id = equip['equipId']
                 equip_path = EQUIP_PATH / f'{equip_id}.png'
                 if not equip_path.exists():
-                    await download_file(equip['equipIcon'], EQUIP_PATH, f'{equip_id}.png')
+                    await download_file(
+                        equip['equipIcon'], EQUIP_PATH, f'{equip_id}.png'
+                    )
                 equip_img = Image.open(equip_path)
                 equip_img = equip_img.resize((45, 45))
-                babg.paste(equip_img, (405 + (eix * 50), int(eiy * 50 + 15)), skill_mask)
+                babg.paste(
+                    equip_img,
+                    (405 + (eix * 50), int(eiy * 50 + 15)),
+                    skill_mask,
+                )
                 eix = eix + 1
                 if eix == 4:
                     eiy = eiy + 1
@@ -129,7 +148,9 @@ async def draw_history_img(
 
         hero_img = Image.open(hero_path)
         if hero_img.size[0] != hero_img.size[1]:
-            hero_img = hero_img.crop((0, 0, hero_img.size[0], hero_img.size[0]))
+            hero_img = hero_img.crop(
+                (0, 0, hero_img.size[0], hero_img.size[0])
+            )
         hero_img = hero_img.resize((100, 100))
         babg.paste(hero_img, (79, 9), hero_mask)
         babg.paste(ring, (78, 8), ring)
@@ -154,7 +175,8 @@ async def draw_history_img(
             )
             for ie0, e1 in enumerate(battle['desc']):
                 babg_draw.text(
-                    (644, 30 + (ie0 * 30)), e1, bar_color, core_font(26), 'lm')
+                    (644, 30 + (ie0 * 30)), e1, bar_color, core_font(26), 'lm'
+                )
 
         babg_draw.text(
             (210, 83),
