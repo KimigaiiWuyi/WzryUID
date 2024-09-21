@@ -1,11 +1,5 @@
 {
-  "python.languageServer": "Pylance",
-  "python.analysis.typeCheckingMode": "basic",
-  "cSpell.words": [
-    "enka",
-    "genshin",
-    "genshinuid"
-  ],
+  "python.languageServer": "None",
   "editor.formatOnSave": true,
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter",
@@ -15,18 +9,13 @@
     }
   },
   "python.autoComplete.extraPaths": [
-    "${workspaceFolder}/../../../"
+    "${workspaceFolder}/../../../../"
   ],
   "isort.args": [
     "--profile",
     "black"
   ],
-  "python.formatting.provider": "black",
-  "python.linting.flake8Enabled": true,
-  "python.linting.flake8CategorySeverity.W": "Warning",
-  "python.linting.flake8CategorySeverity.F": "Warning",
-  "python.linting.flake8CategorySeverity.E": "Warning",
-  "python.analysis.extraPaths": [
+  "basedpyright.analysis.extraPaths": [
     "${workspaceFolder}/../../../"
-  ]
+  ],
 }
