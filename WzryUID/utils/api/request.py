@@ -1,23 +1,23 @@
 import time
 import uuid
 from copy import deepcopy
-from typing import Any, Dict, Literal, Optional, Tuple, Union, cast
+from typing import Any, Dict, Tuple, Union, Literal, Optional, cast
 
-from aiohttp import ClientSession, ContentTypeError, FormData, TCPConnector
 from gsuid_core.logger import logger
+from aiohttp import FormData, TCPConnector, ClientSession, ContentTypeError
 
 from ..database.models import WzryUser
+from .model import SkinInfo, HeroRankList
 from .api import (
-    ALL_ROLE_LIST_V3,
-    BATTLE_DETAIL,
-    BATTLE_HISTORY,
-    HERO_RANK_LIST,
-    PROFILE_HERO_LIST,
-    PROFILE_INDEX,
     SKIN_LIST,
     USER_PROFILE,
+    BATTLE_DETAIL,
+    PROFILE_INDEX,
+    BATTLE_HISTORY,
+    HERO_RANK_LIST,
+    ALL_ROLE_LIST_V3,
+    PROFILE_HERO_LIST,
 )
-from .model import HeroRankList, SkinInfo
 
 
 def generate_id():
