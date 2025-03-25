@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 from typing import Tuple, Union
 
@@ -67,13 +68,14 @@ async def draw_history_img(
             babg = Image.open(TEXT_PATH / 'lose_bg.png')
             bar_color = (255, 66, 66)
 
-        # 从链接中截取 请求对局详情必要的参数 对应账号
-        if toAppRoleId is None:
-            battleDetailUrl: str = battle['battleDetailUrl']
-            if len(battleDetailUrl) > 0:
-                i0 = battleDetailUrl.index("&toAppRoleId=")
-                i1 = battleDetailUrl.index("&toGameRoleId=")
-                toAppRoleId = battleDetailUrl[i0 + 13 : i1]  # noqa: E203
+        match = re.search(
+            r'&toAppRoleId=(\d+)',
+            battle['battleDetailUrl'],
+        )
+        if match:
+            toAppRoleId = match.group(1)
+        else:
+            detail_data = -1
 
         if toAppRoleId is None:
             detail_data = -1
@@ -101,6 +103,9 @@ async def draw_history_img(
                     isMe = basicInfo['isMe']
                     if bool(isMe):
                         self_data = ro0
+
+            if self_data is None:
+                return '获取战绩详情失败'
 
             skin0 = self_data['battleRecords']['usedSkin']
 
