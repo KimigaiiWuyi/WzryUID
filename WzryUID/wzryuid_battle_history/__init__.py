@@ -28,5 +28,5 @@ async def send_wzry_history(bot: Bot, ev: Event):
         option = 4
 
     logger.info(f'[查荣耀] uid:{uid}')
-    im = await draw_history_img(ev.user_id, uid, option)
+    im = await draw_history_img(ev, uid, option)
     await bot.send(im)

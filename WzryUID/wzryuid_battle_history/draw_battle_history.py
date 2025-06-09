@@ -2,12 +2,13 @@ import re
 from pathlib import Path
 from typing import Tuple, Union
 
+from gsuid_core.models import Event
 from PIL import Image, ImageDraw, ImageFilter
 from gsuid_core.utils.fonts.fonts import core_font
 from gsuid_core.utils.image.convert import convert_img
 from gsuid_core.utils.image.image_tools import (
     get_color_bg,
-    get_qq_avatar,
+    get_event_avatar,
     draw_pic_with_ring,
 )
 
@@ -26,7 +27,7 @@ TEXT_PATH = Path(__file__).parent / 'texture2d'
 
 
 async def draw_history_img(
-    user_id: str, yd_user_id: str, option: int = 0
+    ev: Event, yd_user_id: str, option: int = 0
 ) -> Union[str, bytes]:
     data = await wzry_api.get_battle_history(yd_user_id, option)
     if isinstance(data, int):
@@ -43,7 +44,7 @@ async def draw_history_img(
 
     img = await get_color_bg(950, h, BG_PATH)
     img = img.filter(ImageFilter.GaussianBlur(28))
-    avatar_img = await get_qq_avatar(user_id)
+    avatar_img = await get_event_avatar(ev)
     avatar_img = await draw_pic_with_ring(avatar_img, 320)
 
     title = Image.open(TEXT_PATH / 'title.png')
