@@ -4,7 +4,13 @@ from copy import deepcopy
 from typing import Any, Dict, Tuple, Union, Literal, Optional, cast
 
 from gsuid_core.logger import logger
-from aiohttp import FormData, TCPConnector, ClientSession, ContentTypeError
+from aiohttp import (
+    FormData,
+    TCPConnector,
+    ClientSession,
+    ClientTimeout,
+    ContentTypeError,
+)
 
 from ..database.models import WzryUser
 from .model import SkinInfo, HeroRankList
@@ -26,7 +32,7 @@ def generate_id():
 
 async def get_ck(
     target_user_id: Optional[str] = None,
-) -> Union[int, Tuple[str, str]]:
+) -> Union[int, Tuple[Optional[str], str]]:
     ck = await WzryUser.get_random_cookie(
         target_user_id if target_user_id else "18888888"
     )
@@ -37,7 +43,6 @@ async def get_ck(
         uid = wzUser.uid
     else:
         return -61
-
     return uid, ck
 
 
@@ -45,10 +50,12 @@ class BaseWzryApi:
     ssl_verify = True
     _HEADER = {
         "Host": "kohcamp.qq.com",
+        "origin": "https://kohcamp.qq.com",
+        # "referer": "https://kohcamp.qq.com",
         "istrpcrequest": "true",
-        "cchannelid": "10028581",
-        "cclientversioncode": "2037857908",
-        "cclientversionname": "7.84.0628",
+        "cchannelid": "2002",
+        "cclientversioncode": "2047933506",
+        "cclientversionname": "9.103.0723",
         "ccurrentgameid": "20001",
         "cgameid": "20001",
         "cgzip": "1",
@@ -56,21 +63,24 @@ class BaseWzryApi:
         "crand": str(int(time.time())),
         "csupportarm64": "true",
         "csystem": "android",
-        "csystemversioncode": "33",
-        "csystemversionname": "13",
+        "csystemversioncode": "35",
+        "csystemversionname": "15",
         "cpuhardware": "qcom",
-        "gameareaid": "1",
+        "gameareaid": "0",
         "gameid": "20001",
-        "gameopenid": generate_id(),
+        "gameserverid": "0",
+        "gameroleid": "0",
+        # "gameopenid": generate_id(),
         "gameusersex": "1",
         "openid": generate_id(),
-        "tinkerid": "2037857908_64_0",
+        "tinkerid": "2047933506_64_0",
         "content-encrypt": "",
         "accept-encrypt": "",
         "noencrypt": "1",
         "x-client-proto": "https",
         "content-type": "application/json; charset=UTF-8",
         "user-agent": "okhttp/4.9.1",
+        "kohdimgender": "1",
     }
 
     async def get_battle_history(self, yd_user_id: str, option: int = 0):
@@ -92,41 +102,58 @@ class BaseWzryApi:
         return self.unpack(raw_data)
 
     async def get_skin_list(self, yd_user_id: str) -> Union[int, SkinInfo]:
-        header = deepcopy(self._HEADER)
+        # header = deepcopy(self._HEADER)
         _i = await get_ck(yd_user_id)
         if isinstance(_i, int):
             return _i
+
+        if _i[0] is None:
+            return -61
+
+        header: Dict[str, Any] = {
+            "content-encrypt": "",
+            "accept-encrypt": "",
+            "noencrypt": "1",
+            "x-client-proto": "https",
+            "x-log-uid": "1245C88F-093D-406D-91F8-EB8D271D70DB",
+            "kohdimgender": "1",
+            "content-type": "application/x-www-form-urlencoded",
+            "accept-encoding": "gzip",
+            "user-agent": "okhttp/4.9.1",
+        }
+
         header["token"] = _i[1]
         header["userid"] = _i[0]
 
-        header['content-type'] = 'application/x-www-form-urlencoded'
-
         data = FormData()
-        data.add_fields(
-            ('noCache', '0'),
-            ('recommendPrivacy', '0'),
-            # ('roleId', '957148943'),
-            ('cChannelId', '10028581'),
-            ('cClientVersionCode', '2037863508'),
-            ('cClientVersionName', '7.84.0823'),
-            ('cCurrentGameId', '20001'),
-            ('cGameId', '20001'),
-            ('cGzip', '1'),
-            ('cIsArm64', 'false'),
-            ('cRand', str(int(time.time()))),
-            ('cSupportArm64', 'true'),
-            ('cSystem', 'android'),
-            ('cSystemVersionCode', '33'),
-            ('cSystemVersionName', '13'),
-            ('cpuHardware', 'qcom'),
-            ('gameAreaId', '1'),
-            ('gameId', '20001'),
-            ('friendUserId', yd_user_id),
-            # ('gameRoleId', '3731578254'),
-            # ('gameServerId', '1469'),
-            ('token', _i[1]),
-            ('userId', _i[0]),
+        data.add_field("noCache", "0")
+        data.add_field("recommendPrivacy", "0")
+        data.add_field('friendUserId', yd_user_id)
+        data.add_field("cChannelId", "2002")
+        data.add_field("cClientVersionCode", "2047933506")
+        data.add_field("cClientVersionName", "9.103.0723")
+        data.add_field("cCurrentGameId", "20001")
+        data.add_field("cGameId", "20001")
+        data.add_field("cGzip", "1")
+        data.add_field("cIsArm64", "true")
+        data.add_field("cRand", "1754809059114")
+        data.add_field("cSupportArm64", "true")
+        data.add_field("cSystem", "android")
+        data.add_field("cSystemVersionCode", "35")
+        data.add_field("cSystemVersionName", "15")
+        data.add_field("cpuHardware", "qcom")
+        data.add_field("gameAreaId", "0")
+        data.add_field("gameId", "20001")
+        data.add_field("gameRoleId", "0")
+        data.add_field("gameServerId", "0")
+        data.add_field("gameUserSex", "1")
+        data.add_field("openId", "E66DC1CFC7F2EFA94561DD7F09EF7975")
+        data.add_field("tinkerId", "2047933506_64_0")
+        data.add_field(
+            "token",
+            _i[1],
         )
+        data.add_field("userId", _i[0])
 
         raw_data = await self._wzry_request(
             SKIN_LIST, "POST", header, None, data=data
@@ -140,7 +167,11 @@ class BaseWzryApi:
 
         data = {"friendUserId": yd_user_id, "roleId": role_id, "scenario": 0}
         raw_data = await self._wzry_request(
-            USER_PROFILE, "POST", header, None, data
+            USER_PROFILE,
+            "POST",
+            header,
+            None,
+            data,
         )
         return self.unpack(raw_data)
 
@@ -151,9 +182,16 @@ class BaseWzryApi:
             "targetUserId": yd_user_id,
             "recommendPrivacy": 0,
             "targetRoleId": role_id,
+            "apiVersion": 2,
+            "resVersion": 3,
+            # "itsMe": False,
         }
         raw_data = await self._wzry_request(
-            PROFILE_INDEX, "POST", header, None, data
+            PROFILE_INDEX,
+            "POST",
+            header,
+            None,
+            data,
         )
         return self.unpack(raw_data)
 
@@ -232,13 +270,27 @@ class BaseWzryApi:
             uid = wzUser.uid
         else:
             return -61
+
+        if uid is None:
+            return -61
+
         header["token"] = ck
         header["userid"] = uid
-        data = "friendUserId=" + yd_user_id + "&token=" + ck + "&userId=" + uid
-        header["Content-Length"] = str(data.__len__())
+        form_data = FormData()
+        form_data.add_field("friendUserId", yd_user_id)
+        form_data.add_field("token", ck)
+        form_data.add_field("userId", uid)
 
-        raw_data = await self._wzry_request0(
-            ALL_ROLE_LIST_V3, "POST", header, None, data
+        # data = "friendUserId=" + yd_user_id + "&token=" + ck + "&userId=" + uid
+        # header["Content-Length"] = str(data.__len__())
+
+        raw_data = await self._wzry_request(
+            ALL_ROLE_LIST_V3,
+            "POST",
+            header,
+            None,
+            None,
+            form_data,
         )
         return self.unpack(raw_data)
 
@@ -254,10 +306,10 @@ class BaseWzryApi:
         method: Literal["GET", "POST"] = "GET",
         header: Dict[str, Any] = _HEADER,
         params: Optional[Dict[str, Any]] = None,
-        json: Optional[Dict[str, Any]] = None,
+        json: Optional[Union[Dict[str, Any], str]] = None,
         data: Optional[FormData] = None,
     ) -> Union[Dict, int]:
-        if "token" not in header:
+        if "token" not in header and isinstance(json, Dict):
             target_user_id = (
                 json["friendUserId"]
                 if json and "friendUserId" in json
@@ -279,8 +331,14 @@ class BaseWzryApi:
                 params=params,
                 json=json,
                 data=data,
-                timeout=300,
+                timeout=ClientTimeout(total=300),
             ) as resp:
+                logger.debug(f'[Wzry] [URL] {url}')
+                logger.debug(f'[Wzry] [HEADER] {header}')
+                logger.debug(f'[Wzry] [PARAMS] {params}')
+                logger.debug(f'[Wzry] [JSON] {json}')
+                logger.debug(f'[Wzry] [DATA] {data}')
+
                 try:
                     raw_data = await resp.json()
                 except ContentTypeError:
@@ -294,49 +352,4 @@ class BaseWzryApi:
                 ):
                     return raw_data['returnCode']
                 return raw_data
-
-    async def _wzry_request0(
-        self,
-        url: str,
-        method: Literal["GET", "POST"] = "GET",
-        header: Dict[str, Any] = _HEADER,
-        params: Optional[Dict[str, Any]] = None,
-        data: Optional[Dict[str, Any]] = None,
-        json: Optional[FormData] = None,
-    ) -> Union[Dict, int]:
-        if "token" not in header:
-            target_user_id = (
-                data["friendUserId"]
-                if data and "friendUserId" in data
-                else None
-            )
-            _i = await get_ck(target_user_id)
-            if isinstance(_i, int):
-                return _i
-            header["token"] = _i[1]
-            header["userid"] = _i[0]
-
-        async with ClientSession(
-            connector=TCPConnector(verify_ssl=self.ssl_verify)
-        ) as client:
-            async with client.request(
-                method,
-                url=url,
-                headers=header,
-                params=params,
-                data=data,
-                timeout=300,
-            ) as resp:
-                try:
-                    raw_data = await resp.json()
-                except ContentTypeError:
-                    _raw_data = await resp.text()
-                    raw_data = {"retcode": -999, "data": _raw_data}
-                if (
-                    raw_data
-                    and 'returnCode' in raw_data
-                    and raw_data['returnCode'] != 0
-                ):
-                    return raw_data['returnCode']
-                logger.debug(raw_data)
                 return raw_data

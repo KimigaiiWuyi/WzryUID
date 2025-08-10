@@ -12,7 +12,7 @@ USER_PROFILE = f'{MAIN_URL}/userprofile/profile'
 BATTLE_HISTORY = f'{MGAME_URL}/morebattlelist'
 BATTLE_DETAIL = f'{MGAME_URL}/battledetail'
 SEASON_STATUS = f'{MGAME_URL}/seasonpage'
-PROFILE_INDEX = f'{MGAME_URL}/profile/index'
+PROFILE_INDEX = f'{MGAME_URL}/koh/profile'
 PROFILE_HERO_LIST = f'{MGAME_URL}/profile/herolist'
 
 # 特殊

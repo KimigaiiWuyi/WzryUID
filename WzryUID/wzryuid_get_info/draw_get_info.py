@@ -1,6 +1,7 @@
+import json
 from io import BytesIO
 from pathlib import Path
-from typing import Tuple, Union, Optional
+from typing import List, Tuple, Union, Optional
 
 import httpx
 from PIL import Image, ImageDraw, ImageFilter
@@ -46,7 +47,8 @@ async def draw_info_img(user_id: str, yd_user_id: str) -> Union[str, bytes]:
     img = await get_color_bg(950, 2150, BG_PATH)
     img = img.filter(ImageFilter.GaussianBlur(28))
 
-    avatar_url = profile_data["roleCard"]['roleBigIcon']
+    # avatar_url = profile_data["roleCard"]['roleBigIcon']
+    avatar_url = profile_data["profile"]["avatar"]
     avatar_img = await get_qq_avatar(avatar_url=avatar_url)
     avatar_img = await draw_pic_with_ring(avatar_img, 320)
 
@@ -69,17 +71,60 @@ async def draw_info_img(user_id: str, yd_user_id: str) -> Union[str, bytes]:
     x = 596
     y = -80
 
-    flag_url: str = profile_data['roleCard']["flagImg"]
-    flag_name = flag_url.split('/')[-1]
-    flag_img = await download_file(flag_url, ICON_PATH, flag_name, (330, 634))
-    img.paste(flag_img, (x, y), flag_img)
+    # 巅峰赛
+    profile_mods = profile_index_data['head']['mods']
+
+    season_data = {}
+    pinnacle_data = {}
+
+    # 总体资料
+    battle_score = profile_mods[2]['content']  # 战斗力
+    MVP = profile_mods[3]['content']  # MVP
+    all_battle_num = profile_mods[4]['content']  # 总场次
+    hero_num = profile_mods[5]['content']  # 英雄 11/115
+    win_rate = profile_mods[6]['content']  # 胜率 51.85%
+    skin_num = profile_mods[7]['content']  # 皮肤 11/522
+
+    for i in profile_mods:
+        if i['modId'] == 702:
+            pinnacle_data = i
+        if i['modId'] == 701:
+            season_data = i
+        if i['modId'] == 304:
+            battle_score: str = i['content']
+        if i['modId'] == 408:
+            MVP: str = i['content']
+        if i['modId'] == 401:
+            all_battle_num: str = i['content']
+        if i['modId'] == 201:
+            hero_num: str = i['content']
+        if i['modId'] == 409:
+            win_rate: str = i['content']
+        if i['modId'] == 202:
+            skin_num: str = i['content']
+
+    # pinnacle_data = profile_mods[1]
+
+    # flag_url: str = profile_data['roleCard']["flagImg"]
+    # flag_name = flag_url.split('/')[-1]
+    # flag_img = await download_file(flag_url, ICON_PATH, flag_name, (330, 634))
+    # img.paste(flag_img, (x, y), flag_img)
     # img.paste(flag_img, (x, y + 360), flag_img)
 
-    role_job_url = profile_data['roleCard']["roleJobIcon"]
-    role_job_img = await get_pic(url=role_job_url, size=(400, 400))
+    flag_data = json.loads(season_data['param1'])
+    flag_name = flag_data['flagPag'].split('/')[-1].split('.')[0]
+    flag_img = Image.open(TEXT_PATH / f'{flag_name}.png').resize((330, 634))
+    img.paste(flag_img, (x, y), flag_img)
+
+    role_job_url = season_data['icon']
+    role_job_sp_url: List[str] = role_job_url.split('/')
+    role_job_name = f'{role_job_sp_url[-1]}_{role_job_sp_url[-2]}'
+    role_job_img = await download_file(
+        role_job_url, ICON_PATH, role_job_name, (400, 400)
+    )
     img.paste(role_job_img, (x - 35, y + 170), role_job_img)
 
-    star_img_url: str = profile_data['roleCard']["starImg"]
+    star_img_url: str = flag_data["starImg"]
     if star_img_url != '':
         sp_url = star_img_url.split('/')
         star_name = f'{sp_url[-2]}_{sp_url[-1]}'
@@ -95,15 +140,11 @@ async def draw_info_img(user_id: str, yd_user_id: str) -> Union[str, bytes]:
 
     img_draw.text(
         (x + 200, h + 25),
-        "x" + str(profile_data['roleCard']['rankingStar']),
+        "x" + str(flag_data['rankingStar']),
         (224, 195, 100),
         core_font(40),
         'mm',
     )
-
-    # 巅峰赛
-    profile_mods = profile_index_data['head']['mods']
-    pinnacle_data = profile_mods[1]
 
     x = 596
     y = 340
@@ -130,14 +171,6 @@ async def draw_info_img(user_id: str, yd_user_id: str) -> Union[str, bytes]:
         'mm',
     )
     # 上半部分结束
-
-    # 总体资料
-    battle_score: str = profile_mods[2]['content']  # 战斗力
-    MVP: str = profile_mods[3]['content']  # MVP
-    all_battle_num: str = profile_mods[4]['content']  # 总场次
-    hero_num: str = profile_mods[5]['content']  # 英雄 11/115
-    win_rate: str = profile_mods[6]['content']  # 胜率 51.85%
-    skin_num: str = profile_mods[7]['content']  # 皮肤 11/522
 
     base_info_bg = Image.open(TEXT_PATH / 'base_info.png')
     info_draw = ImageDraw.Draw(base_info_bg)
@@ -312,5 +345,6 @@ async def get_pic_and_crop(
         pic = pic.crop(box)
         pic = pic.convert("RGBA")
         if size is not None:
-            pic = pic.resize(size, Image.LANCZOS)
+            pic = pic.resize(size, Image.Resampling.LANCZOS)
+
         return pic
