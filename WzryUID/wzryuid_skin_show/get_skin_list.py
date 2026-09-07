@@ -113,7 +113,7 @@ async def _get_skin_list(user_id: str, yd_user_id: str) -> Union[str, bytes]:
             label_name = skin['classLabel'].split('/')[-1]
             label: Image.Image = await download_file(
                 skin['classLabel'], ICON_PATH, label_name
-            )  # type:ignore
+            )  # type: ignore
             label = label.convert('RGBA')
             if label.size == (95, 46):
                 skin_bg.paste(label, (128, 53), label)

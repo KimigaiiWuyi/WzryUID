@@ -10,7 +10,6 @@ error_code = {
 }
 
 
-
 def get_error(retcode: int) -> str:
     if retcode in error_code:
         return error_code[retcode]
