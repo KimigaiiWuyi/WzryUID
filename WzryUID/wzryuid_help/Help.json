@@ -1,7 +1,15 @@
 {
   "基础服务": {
-    "desc": "需要先绑定uid",
+    "desc": "先绑定uid, 再扫码登录获取登录态(需 WzryScanLogin 插件)",
     "data": [
+      {
+        "name": "王者扫码登录",
+        "desc": "扫码获取查询所需登录态(需 WzryScanLogin)",
+        "eg": "王者扫码登录",
+        "need_ck": false,
+        "need_sk": false,
+        "need_admin": false
+      },
       {
         "name": "王者绑定uid",
         "desc": "绑定你的王者UID",
@@ -28,7 +36,7 @@
       },
       {
         "name": "王者添加CK",
-        "desc": "往数据库添加一个营地CK",
+        "desc": "备用登录方式(仅写数据库), 推荐优先用扫码登录",
         "eg": "王者添加CK18-HU",
         "need_ck": false,
         "need_sk": false,

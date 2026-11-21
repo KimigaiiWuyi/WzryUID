@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Tuple, Union
 
 from gsuid_core.models import Event
+from gsuid_core.logger import logger
 from PIL import Image, ImageDraw, ImageFilter
 from gsuid_core.utils.fonts.fonts import core_font
 from gsuid_core.utils.image.convert import convert_img
@@ -32,6 +33,9 @@ async def draw_history_img(
     data = await wzry_api.get_battle_history(yd_user_id, option)
     if isinstance(data, int):
         return get_error(data)
+    if not isinstance(data, dict):
+        logger.warning(f'[查荣耀] 战绩接口返回异常类型: {type(data).__name__}')
+        return '战绩接口返回异常，请稍后重试'
 
     game_text = '正在游戏' if data['isGaming'] else '当前未在游戏中'
 
@@ -87,6 +91,7 @@ async def draw_history_img(
                 battle['relaySvrId'],
                 battle['gameSeq'],
                 battle['battleType'],
+                yd_user_id,
             )
         self_data = None
 

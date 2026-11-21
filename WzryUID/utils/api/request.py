@@ -84,129 +84,74 @@ class BaseWzryApi:
     }
 
     async def get_battle_history(self, yd_user_id: str, option: int = 0):
-        header = deepcopy(self._HEADER)
-        # header['gameserverid'] = '1469'
-        # header['gameroleid'] = '3731578254'
+        # 战绩列表走新版营地协议（新签名 + 响应解密），登录态复用账号池
+        from ..camp_auth import camp_request, MORE_BATTLE_LIST
 
-        data = {
+        body = {
             "lastTime": 0,
             "recommendPrivacy": 0,
             "apiVersion": 5,
-            # 'friendRoleId': '3731578254',
             "friendUserId": yd_user_id,
             "option": option,
         }
-        raw_data = await self._wzry_request(
-            BATTLE_HISTORY, "POST", header, None, data
-        )
-        return self.unpack(raw_data)
+        return await camp_request(MORE_BATTLE_LIST, body, yd_user_id)
 
     async def get_skin_list(self, yd_user_id: str) -> Union[int, SkinInfo]:
-        # header = deepcopy(self._HEADER)
-        _i = await get_ck(yd_user_id)
-        if isinstance(_i, int):
-            return _i
+        # 皮肤墙走游戏侧 form 新协议（新版登录态 + 新客户端版本），登录态复用账号池
+        from ..camp_auth import game_form_request
 
-        if _i[0] is None:
-            return -61
-
-        header: Dict[str, Any] = {
-            "content-encrypt": "",
-            "accept-encrypt": "",
-            "noencrypt": "1",
-            "x-client-proto": "https",
-            "x-log-uid": "1245C88F-093D-406D-91F8-EB8D271D70DB",
-            "kohdimgender": "1",
-            "content-type": "application/x-www-form-urlencoded",
-            "accept-encoding": "gzip",
-            "user-agent": "okhttp/4.9.1",
-        }
-
-        header["token"] = _i[1]
-        header["userid"] = _i[0]
-
-        data = FormData()
-        data.add_field("noCache", "0")
-        data.add_field("recommendPrivacy", "0")
-        data.add_field('friendUserId', yd_user_id)
-        data.add_field("cChannelId", "2002")
-        data.add_field("cClientVersionCode", "2047933506")
-        data.add_field("cClientVersionName", "9.103.0723")
-        data.add_field("cCurrentGameId", "20001")
-        data.add_field("cGameId", "20001")
-        data.add_field("cGzip", "1")
-        data.add_field("cIsArm64", "true")
-        data.add_field("cRand", "1754809059114")
-        data.add_field("cSupportArm64", "true")
-        data.add_field("cSystem", "android")
-        data.add_field("cSystemVersionCode", "35")
-        data.add_field("cSystemVersionName", "15")
-        data.add_field("cpuHardware", "qcom")
-        data.add_field("gameAreaId", "0")
-        data.add_field("gameId", "20001")
-        data.add_field("gameRoleId", "0")
-        data.add_field("gameServerId", "0")
-        data.add_field("gameUserSex", "1")
-        data.add_field("openId", "E66DC1CFC7F2EFA94561DD7F09EF7975")
-        data.add_field("tinkerId", "2047933506_64_0")
-        data.add_field(
-            "token",
-            _i[1],
+        result = await game_form_request(
+            '/play/h5getheroskinlist',
+            {
+                'noCache': '0',
+                'recommendPrivacy': '0',
+                'friendUserId': yd_user_id,
+            },
+            yd_user_id,
         )
-        data.add_field("userId", _i[0])
-
-        raw_data = await self._wzry_request(
-            SKIN_LIST, "POST", header, None, data=data
-        )
-        if not isinstance(raw_data, int):
-            return cast(SkinInfo, raw_data['data'])
-        return raw_data
+        if isinstance(result, int):
+            return result
+        return cast(SkinInfo, result)
 
     async def get_user_profile(self, yd_user_id: str, role_id: str):
-        header = deepcopy(self._HEADER)
+        # 走新版营地协议，登录态复用账号池
+        from ..camp_auth import camp_request
 
-        data = {"friendUserId": yd_user_id, "roleId": role_id, "scenario": 0}
-        raw_data = await self._wzry_request(
+        return await camp_request(
             USER_PROFILE,
-            "POST",
-            header,
-            None,
-            data,
+            {"friendUserId": yd_user_id, "roleId": role_id, "scenario": 0},
+            yd_user_id,
         )
-        return self.unpack(raw_data)
 
     async def get_user_profile_index(self, yd_user_id: str, role_id: str):
-        header = deepcopy(self._HEADER)
+        # 走新版营地协议，登录态复用账号池
+        from ..camp_auth import camp_request
 
-        data = {
-            "targetUserId": yd_user_id,
-            "recommendPrivacy": 0,
-            "targetRoleId": role_id,
-            "apiVersion": 2,
-            "resVersion": 3,
-            # "itsMe": False,
-        }
-        raw_data = await self._wzry_request(
+        return await camp_request(
             PROFILE_INDEX,
-            "POST",
-            header,
-            None,
-            data,
+            {
+                "targetUserId": yd_user_id,
+                "recommendPrivacy": 0,
+                "targetRoleId": role_id,
+                "apiVersion": 2,
+                "resVersion": 3,
+            },
+            yd_user_id,
         )
-        return self.unpack(raw_data)
 
     async def get_user_profile_hero_list(self, yd_user_id: str, role_id: str):
-        header = deepcopy(self._HEADER)
+        # 走新版营地协议，登录态复用账号池
+        from ..camp_auth import camp_request
 
-        data = {
-            "targetUserId": yd_user_id,
-            "recommendPrivacy": 0,
-            "targetRoleId": role_id,
-        }
-        raw_data = await self._wzry_request(
-            PROFILE_HERO_LIST, "POST", header, None, data
+        return await camp_request(
+            PROFILE_HERO_LIST,
+            {
+                "targetUserId": yd_user_id,
+                "recommendPrivacy": 0,
+                "targetRoleId": role_id,
+            },
+            yd_user_id,
         )
-        return self.unpack(raw_data)
 
     async def get_battle_detail(
         self,
@@ -215,12 +160,12 @@ class BaseWzryApi:
         relaySvr: str,
         gameSeq: str,
         battleType: int,
+        yd_user_id: str = "",
     ):
-        header = deepcopy(self._HEADER)
-        # header['gameserverid'] = '1469'
-        # header['gameroleid'] = '3731578254'
+        # 战绩详情走新版营地协议；yd_user_id 用于定位账号池登录态
+        from ..camp_auth import camp_request, BATTLE_DETAIL
 
-        data = {
+        body = {
             "recommendPrivacy": 0,
             "battleType": battleType,
             "gameSvr": gameSvr,
@@ -228,11 +173,9 @@ class BaseWzryApi:
             "targetRoleId": wz_user_id,
             "gameSeq": gameSeq,
         }
-
-        raw_data = await self._wzry_request(
-            BATTLE_DETAIL, "POST", header, None, data
+        return await camp_request(
+            BATTLE_DETAIL, body, yd_user_id or wz_user_id
         )
-        return self.unpack(raw_data)
 
     async def get_hero_rank_list(
         self,
@@ -243,62 +186,53 @@ class BaseWzryApi:
         segment: 5(赛事),4(顶端排位),3(巅峰赛1350),2(所有段位),1(所有段位)
         position: 5(打野),4(游走),3(发育),2(中路),1(对抗),0(全部)
         '''
-        header = deepcopy(self._HEADER)
+        # 英雄榜是全局榜单，走新版营地协议，登录态用账号池的全局默认账号
+        from ..camp_auth import camp_request, get_default_uid
 
-        data = {
-            "recommendPrivacy": 0,
-            "segment": segment,
-            "position": position,
-        }
+        uid = get_default_uid()
+        if not uid:
+            return -61
 
-        raw_data = await self._wzry_request(
-            HERO_RANK_LIST, "POST", header, None, data
+        result = await camp_request(
+            HERO_RANK_LIST,
+            {
+                "recommendPrivacy": 0,
+                "segment": segment,
+                "position": position,
+            },
+            uid,
         )
-        if isinstance(raw_data, Dict):
-            return cast(HeroRankList, raw_data['data'])
-        return raw_data
+        if isinstance(result, Dict):
+            return cast(HeroRankList, result)
+        return result
 
     async def get_user_role(self, yd_user_id: str):
-        header = deepcopy(self._HEADER)
-        header["Content-Type"] = "application/x-www-form-urlencoded"
-        header["Host"] = "ssl.kohsocialapp.qq.com:10001"
-        ck = await WzryUser.get_random_cookie(yd_user_id)
-        if ck is None:
-            return -61
-        wzUser = await WzryUser.base_select_data(cookie=ck)
-        if wzUser is not None:
-            uid = wzUser.uid
-        else:
-            return -61
+        # 角色列表走游戏侧 form 新协议，登录态复用账号池
+        from ..camp_auth import game_form_request
 
-        if uid is None:
-            return -61
-
-        header["token"] = ck
-        header["userid"] = uid
-        form_data = FormData()
-        form_data.add_field("friendUserId", yd_user_id)
-        form_data.add_field("token", ck)
-        form_data.add_field("userId", uid)
-
-        # data = "friendUserId=" + yd_user_id + "&token=" + ck + "&userId=" + uid
-        # header["Content-Length"] = str(data.__len__())
-
-        raw_data = await self._wzry_request(
-            ALL_ROLE_LIST_V3,
-            "POST",
-            header,
-            None,
-            None,
-            form_data,
+        return await game_form_request(
+            '/game/allrolelistv3',
+            {'friendUserId': yd_user_id},
+            yd_user_id,
         )
-        return self.unpack(raw_data)
 
-    def unpack(self, raw_data: Union[Dict, int]) -> Union[Dict, int]:
+    def unpack(self, raw_data: Union[Dict, int, str]) -> Union[Dict, int]:
         if isinstance(raw_data, Dict):
-            return raw_data["data"]
-        else:
-            return raw_data
+            # 业务错误码可能是字符串（如 "-30003"），统一转为 int 交由 get_error 处理
+            rc = raw_data.get("returnCode", 0)
+            if rc not in (0, None) and "data" not in raw_data:
+                try:
+                    return int(rc)
+                except (ValueError, TypeError):
+                    return -1
+            return raw_data.get("data", raw_data)
+        elif isinstance(raw_data, str):
+            # 字符串错误码（"_wzry_request" 在 returnCode 非 0 时原样返回）
+            try:
+                return int(raw_data)
+            except ValueError:
+                return -1
+        return raw_data
 
     async def _wzry_request(
         self,
@@ -345,11 +279,11 @@ class BaseWzryApi:
                     _raw_data = await resp.text()
                     raw_data = {"retcode": -999, "data": _raw_data}
                 logger.debug(raw_data)
-                if (
-                    raw_data
-                    and 'returnCode' in raw_data
-                    and raw_data['returnCode'] != 0
-                ):
-                    return raw_data['returnCode']
-                return raw_data
+                if raw_data and 'returnCode' in raw_data:
+                    rc = raw_data['returnCode']
+                    if rc not in (0, "0", None):
+                        try:
+                            return int(rc)
+                        except (ValueError, TypeError):
+                            return -1
                 return raw_data
