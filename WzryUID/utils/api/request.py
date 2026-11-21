@@ -85,7 +85,7 @@ class BaseWzryApi:
 
     async def get_battle_history(self, yd_user_id: str, option: int = 0):
         # 战绩列表走新版营地协议（新签名 + 响应解密），登录态复用账号池
-        from ..camp_auth import camp_request, MORE_BATTLE_LIST
+        from ..camp_auth import MORE_BATTLE_LIST, camp_request
 
         body = {
             "lastTime": 0,
@@ -163,7 +163,7 @@ class BaseWzryApi:
         yd_user_id: str = "",
     ):
         # 战绩详情走新版营地协议；yd_user_id 用于定位账号池登录态
-        from ..camp_auth import camp_request, BATTLE_DETAIL
+        from ..camp_auth import BATTLE_DETAIL, camp_request
 
         body = {
             "recommendPrivacy": 0,

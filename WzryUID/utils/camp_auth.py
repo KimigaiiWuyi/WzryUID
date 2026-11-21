@@ -4,6 +4,7 @@
 协议细节参考 GloryOfKings-Plugin，但登录态存放在 WzryUID 自己的账号池
 （data/WzryUID/AuthPool.json），与参考插件各自独立，不共享运行时文件。
 """
+
 from __future__ import annotations
 
 import json
@@ -12,10 +13,10 @@ import uuid
 import base64
 import subprocess
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Union, Optional
 
-from gsuid_core.data_store import get_res_path
 from gsuid_core.logger import logger
+from gsuid_core.data_store import get_res_path
 
 # WzryUID 自己的登录态账号池（gsuid_core data 目录下，已被 .gitignore 排除）
 # 用 get_res_path 动态解析，不含任何其它项目的绝对路径，便于独立部署与推送 GitHub
@@ -216,10 +217,9 @@ async def camp_request(
                 json=body,
                 timeout=aiohttp.ClientTimeout(total=30),
             ) as resp:
-                ret_header = (
-                    resp.headers.get('returnCode')
-                    or resp.headers.get('returncode')
-                )
+                ret_header = resp.headers.get(
+                    'returnCode'
+                ) or resp.headers.get('returncode')
                 text = await resp.text()
     except Exception as e:
         logger.warning(f'[WzryUID] 营地请求失败: {e}')
@@ -250,7 +250,9 @@ async def camp_request(
     except (ValueError, TypeError):
         return -1
     if rc != 0:
-        logger.warning(f'[WzryUID] 营地业务错误: {rc} {data.get("returnMsg", "")}')
+        logger.warning(
+            f'[WzryUID] 营地业务错误: {rc} {data.get("returnMsg", "")}'
+        )
         return rc
     return data.get('data', data)
 
