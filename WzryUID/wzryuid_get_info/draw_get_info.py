@@ -107,7 +107,7 @@ async def draw_info_img(user_id: str, yd_user_id: str) -> Union[str, bytes]:
 
     # flag_url: str = profile_data['roleCard']["flagImg"]
     # flag_name = flag_url.split('/')[-1]
-    # flag_img = await download_file(flag_url, ICON_PATH, flag_name, (330, 634))
+    # flag_img = await download_file(flag_url, ICON_PATH, flag_name, (330,634))
     # img.paste(flag_img, (x, y), flag_img)
     # img.paste(flag_img, (x, y + 360), flag_img)
 

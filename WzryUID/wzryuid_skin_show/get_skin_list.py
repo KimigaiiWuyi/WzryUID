@@ -90,21 +90,42 @@ async def _get_skin_list(user_id: str, yd_user_id: str) -> Union[str, bytes]:
 
     for index, skin in enumerate(result):
         base = 'https://game-1255653016.file.myqcloud.com'
-        skin_img_url = f'{base}/battle_skin_702-1236/{skin["iSkinId"]}.jpg'
-        # skin_img_url = skin['szLargeIcon']
-        # skin_img_url = skin['szSmallIcon']
         sz = skin['szClass'].replace('＋', '+')  # 皮肤等级
         skin_bg = Image.open(TEXT_PATH / f'{sz}.png')
         sz_title = skin['szTitle']  # 皮肤名
         hero_name = skin['szHeroTitle']  # 英雄名
         # worth = skin['skin_worth']
 
-        skin_img = await download_file(
-            skin_img_url,
-            SKIN_PATH,
-            f'{sz_title}_{skin["iSkinId"]}.png',
-            (216, 384),
-        )
+        # 多图源回退：营地接口配置表自带的字段优先（新皮肤旧路径常 404），
+        # 旧 battle_skin 路径画质好作为次选；过滤掉 shp.qpic.cn 的空占位图。
+        def _valid(u):
+            u = str(u or '').replace('http://', 'https://')
+            if not u or 'qpic.cn/tgos///' in u:
+                return None
+            return u
+
+        candidates = [
+            _valid(skin.get('szLargeIcon')),
+            f'{base}/battle_skin_702-1236/{skin["iSkinId"]}.jpg',
+            _valid(skin.get('bigCover')),
+            _valid(skin.get('szSmallIcon')),
+        ]
+        skin_img = None
+        for url in candidates:
+            if not url:
+                continue
+            got = await download_file(
+                url,
+                SKIN_PATH,
+                f'{sz_title}_{skin["iSkinId"]}.png',
+                (216, 384),
+            )
+            if isinstance(got, Image.Image):
+                skin_img = got
+                break
+        if skin_img is None:
+            # 所有图源都不可用，跳过该皮肤避免 paste 崩溃
+            continue
 
         skin_bg.paste(skin_img, (22, 3), mask)
         skin_bg.paste(cover, (0, 0), cover)
