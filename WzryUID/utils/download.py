@@ -59,7 +59,9 @@ async def download_file(
             content = resp.content
             # 校验 HTTP 状态与图片内容，避免把错误页写进缓存
             if resp.status_code != 200:
-                logger.warning(f'[wzry]{name}下载失败: HTTP {resp.status_code}')
+                logger.warning(
+                    f'[wzry]{name}下载失败: HTTP {resp.status_code}'
+                )
                 return url, path, name
             with Image.open(BytesIO(content)) as _im:
                 _im.verify()

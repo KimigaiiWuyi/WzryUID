@@ -2,7 +2,9 @@
 # 注意：新版协议下查询首选由 WzryScanLogin 扫码写入账号池的登录态
 # （data/WzryUID/AuthPool.json）；旧的「王者添加CK」作为备用方式仅写数据库。
 # 因此与登录态相关的错误优先引导用户使用扫码登录。
-SCAN_LOGIN_HINT = '请使用[王者扫码登录]扫码获取登录态(需安装 WzryScanLogin 插件)'
+SCAN_LOGIN_HINT = (
+    '请使用[王者扫码登录]扫码获取登录态(需安装 WzryScanLogin 插件)'
+)
 
 error_code = {
     -41: '你还没有绑定过uid哦!\n请使用[王者绑定UID]命令绑定!',
