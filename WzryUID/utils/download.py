@@ -34,8 +34,6 @@ async def download_file(
     name: str,
     size: Optional[Tuple[int, int]] = None,
 ) -> Union[Image.Image, Tuple[str, Path, str], None]:
-    from io import BytesIO
-
     file_path = path / name
     # 命中缓存前先校验是否为有效图片（旧版曾把 404 的 XML 错误页当成图片缓存，
     # 导致后续每次 Image.open 都抛 UnidentifiedImageError）

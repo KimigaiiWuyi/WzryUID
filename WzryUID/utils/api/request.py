@@ -1,6 +1,5 @@
 import time
 import uuid
-from copy import deepcopy
 from typing import Any, Dict, Tuple, Union, Literal, Optional, cast
 
 from gsuid_core.logger import logger
@@ -15,13 +14,9 @@ from aiohttp import (
 from ..database.models import WzryUser
 from .model import SkinInfo, HeroRankList
 from .api import (
-    SKIN_LIST,
     USER_PROFILE,
-    BATTLE_DETAIL,
     PROFILE_INDEX,
-    BATTLE_HISTORY,
     HERO_RANK_LIST,
-    ALL_ROLE_LIST_V3,
     PROFILE_HERO_LIST,
 )
 
